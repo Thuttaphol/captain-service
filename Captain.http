@@ -1,0 +1,6 @@
+@Captain_HostAddress = http://localhost:5194
+
+GET {{Captain_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
