@@ -4,15 +4,15 @@ namespace Captain.Services;
 
 public interface ICategoryService
 {
-  Task<List<CategoryResponse>> GetAllCategory(CancellationToken cancellationToken);
-  Task<CategoryResponse?> GetCategoryById(int CategoryId, CancellationToken cancellationToken);
-  Task<CategoryResponse> CreateCategory(
+  Task<List<CategoryResponse>> GetCategoriesAsync(CancellationToken cancellationToken);
+  Task<CategoryResponse?> GetCategoryByIdAsync(int CategoryId, CancellationToken cancellationToken);
+  Task<CategoryResponse> CreateCategoryAsync(
     CreateCategoryRequest request,
     CancellationToken cancellationToken
   );
-  Task<CategoryResponse> UpdateCategory(
+  Task<CategoryResponse> UpdateCategoryAsync(
     UpdateCategoryRequest request,
     CancellationToken cancellationToken
   );
-  Task<bool> DeleteCategory(int categoryId, CancellationToken cancellationToken);
+  Task<bool> DeleteCategoryAsync(int categoryId, CancellationToken cancellationToken);
 }

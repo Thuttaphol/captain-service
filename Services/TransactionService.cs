@@ -9,7 +9,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 {
   private readonly MoneyDbContext _moneyContext = moneyContext;
 
-  public async Task<List<TransactionResponse>> GetAllTransaction(
+  public async Task<List<TransactionResponse>> GetTransactionsAsync(
     CancellationToken cancellationToken
   )
   {
@@ -30,7 +30,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     return response;
   }
 
-  public async Task<TransactionResponse?> GetTransactionById(
+  public async Task<TransactionResponse?> GetTransactionByIdAsync(
     int transactionId,
     CancellationToken cancellationToken
   )
@@ -52,7 +52,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     return response;
   }
 
-  public async Task<TransactionResponse> CreateTransaction(
+  public async Task<TransactionResponse> CreateTransactionAsync(
     CreateTransactionRequest request,
     CancellationToken cancellationToken
   )
@@ -85,13 +85,13 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
     var savedTransaction =
-      await GetTransactionById(transaction.Id, cancellationToken)
+      await GetTransactionByIdAsync(transaction.Id, cancellationToken)
       ?? throw new InvalidOperationException("The transaction was created but could not be read.");
 
     return savedTransaction;
   }
 
-  public async Task<TransactionResponse> UpdateTransaction(
+  public async Task<TransactionResponse> UpdateTransactionAsync(
     UpdateTransactionRequest request,
     CancellationToken cancellationToken
   )
@@ -122,13 +122,13 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
     var updatedTransaction =
-      await GetTransactionById(transaction.Id, cancellationToken)
+      await GetTransactionByIdAsync(transaction.Id, cancellationToken)
       ?? throw new InvalidOperationException("The transaction was created but could not be read.");
 
     return updatedTransaction;
   }
 
-  public async Task<string> DeleteTransaction(
+  public async Task<string> DeleteTransactionAsync(
     int transactionId,
     CancellationToken cancellationToken
   )

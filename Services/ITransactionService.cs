@@ -4,18 +4,18 @@ namespace Captain.Services;
 
 public interface ITransactionService
 {
-  Task<List<TransactionResponse>> GetAllTransaction(CancellationToken cancellationToken);
-  Task<TransactionResponse?> GetTransactionById(
+  Task<List<TransactionResponse>> GetTransactionsAsync(CancellationToken cancellationToken);
+  Task<TransactionResponse?> GetTransactionByIdAsync(
     int transactionId,
     CancellationToken cancellationToken
   );
-  Task<TransactionResponse> CreateTransaction(
+  Task<TransactionResponse> CreateTransactionAsync(
     CreateTransactionRequest request,
     CancellationToken cancellationToken
   );
-  Task<TransactionResponse> UpdateTransaction(
+  Task<TransactionResponse> UpdateTransactionAsync(
     UpdateTransactionRequest request,
     CancellationToken cancellationToken
   );
-  Task<string> DeleteTransaction(int transactionId, CancellationToken cancellationToken);
+  Task<string> DeleteTransactionAsync(int transactionId, CancellationToken cancellationToken);
 }

@@ -11,22 +11,24 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
   private readonly ICategoryService _categoryService = categoryService;
 
   [HttpGet("get-all")]
-  public async Task<ActionResult<CategoryResponse>> GetAllCategory(
+  public async Task<ActionResult<CategoryResponse>> GetCategoriesAsync(
     CancellationToken cancellationToken
   )
   {
-    var categories = await _categoryService.GetAllCategory(cancellationToken: cancellationToken);
+    var categories = await _categoryService.GetCategoriesAsync(
+      cancellationToken: cancellationToken
+    );
 
     return Ok(categories);
   }
 
   [HttpGet("{categoryId:int}")]
-  public async Task<ActionResult<CategoryResponse>> GetCategoryById(
+  public async Task<ActionResult<CategoryResponse>> GetCategoryByIdAsync(
     int categoryId,
     CancellationToken cancellationToken
   )
   {
-    var category = await _categoryService.GetCategoryById(
+    var category = await _categoryService.GetCategoryByIdAsync(
       CategoryId: categoryId,
       cancellationToken: cancellationToken
     );
@@ -40,12 +42,12 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
   }
 
   [HttpPost]
-  public async Task<ActionResult<CategoryResponse>> CreateCategory(
+  public async Task<ActionResult<CategoryResponse>> CreateCategoryAsync(
     CreateCategoryRequest request,
     CancellationToken cancellationToken
   )
   {
-    var createdCategory = await _categoryService.CreateCategory(
+    var createdCategory = await _categoryService.CreateCategoryAsync(
       request: request,
       cancellationToken: cancellationToken
     );
@@ -54,12 +56,12 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
   }
 
   [HttpPut]
-  public async Task<ActionResult<CategoryResponse>> UpdateCategory(
+  public async Task<ActionResult<CategoryResponse>> UpdateCategoryAsync(
     UpdateCategoryRequest request,
     CancellationToken cancellationToken
   )
   {
-    var updatedCategory = await _categoryService.UpdateCategory(
+    var updatedCategory = await _categoryService.UpdateCategoryAsync(
       request: request,
       cancellationToken: cancellationToken
     );
@@ -73,12 +75,12 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
   }
 
   [HttpDelete("{categoryId:int}")]
-  public async Task<IActionResult> DeleteCategory(
+  public async Task<IActionResult> DeleteCategoryAsync(
     [FromRoute] int categoryId,
     CancellationToken cancellationToken
   )
   {
-    var response = await _categoryService.DeleteCategory(
+    var response = await _categoryService.DeleteCategoryAsync(
       categoryId: categoryId,
       cancellationToken: cancellationToken
     );

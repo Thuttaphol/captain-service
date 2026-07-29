@@ -11,23 +11,23 @@ public class TransactionController(ITransactionService transactionService) : Con
   private readonly ITransactionService _transactionService = transactionService;
 
   [HttpGet("get-all")]
-  public async Task<ActionResult<TransactionResponse>> GetAllTransaction(
+  public async Task<ActionResult<TransactionResponse>> GetTransactionsAsync(
     CancellationToken cancellationToken
   )
   {
-    var transactions = await _transactionService.GetAllTransaction(
+    var transactions = await _transactionService.GetTransactionsAsync(
       cancellationToken: cancellationToken
     );
     return Ok(transactions);
   }
 
   [HttpGet("{transactionId:int}")]
-  public async Task<ActionResult<TransactionResponse>> GetTransactionById(
+  public async Task<ActionResult<TransactionResponse>> GetTransactionByIdAsync(
     int transactionId,
     CancellationToken cancellationToken
   )
   {
-    var transaction = await _transactionService.GetTransactionById(
+    var transaction = await _transactionService.GetTransactionByIdAsync(
       transactionId,
       cancellationToken
     );
@@ -41,12 +41,12 @@ public class TransactionController(ITransactionService transactionService) : Con
   }
 
   [HttpPost]
-  public async Task<ActionResult<TransactionResponse>> CreateTransaction(
+  public async Task<ActionResult<TransactionResponse>> CreateTransactionAsync(
     CreateTransactionRequest request,
     CancellationToken cancellationToken
   )
   {
-    var createdTransaction = await _transactionService.CreateTransaction(
+    var createdTransaction = await _transactionService.CreateTransactionAsync(
       request: request,
       cancellationToken: cancellationToken
     );
@@ -55,12 +55,12 @@ public class TransactionController(ITransactionService transactionService) : Con
   }
 
   [HttpPut]
-  public async Task<ActionResult<TransactionResponse>> UpdateTransaction(
+  public async Task<ActionResult<TransactionResponse>> UpdateTransactionAsync(
     UpdateTransactionRequest request,
     CancellationToken cancellationToken
   )
   {
-    var updatedTransaction = await _transactionService.UpdateTransaction(
+    var updatedTransaction = await _transactionService.UpdateTransactionAsync(
       request: request,
       cancellationToken: cancellationToken
     );
@@ -73,12 +73,12 @@ public class TransactionController(ITransactionService transactionService) : Con
   }
 
   [HttpDelete("{transactionId:int}")]
-  public async Task<IActionResult> DeleteTransaction(
+  public async Task<IActionResult> DeleteTransactionAsync(
     [FromRoute] int transactionId,
     CancellationToken cancellationToken
   )
   {
-    var response = await _transactionService.DeleteTransaction(
+    var response = await _transactionService.DeleteTransactionAsync(
       transactionId: transactionId,
       cancellationToken: cancellationToken
     );

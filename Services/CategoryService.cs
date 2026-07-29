@@ -9,7 +9,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
 {
   private readonly MoneyDbContext _moneyContext = moneyContext;
 
-  public async Task<List<CategoryResponse>> GetAllCategory(CancellationToken cancellationToken)
+  public async Task<List<CategoryResponse>> GetCategoriesAsync(CancellationToken cancellationToken)
   {
     List<CategoryResponse> response = await _moneyContext
       .Categories.AsNoTracking()
@@ -19,7 +19,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
     return response;
   }
 
-  public async Task<CategoryResponse?> GetCategoryById(
+  public async Task<CategoryResponse?> GetCategoryByIdAsync(
     int categoryId,
     CancellationToken cancellationToken
   )
@@ -38,7 +38,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
     return category;
   }
 
-  public async Task<CategoryResponse?> GetCategoryByName(
+  public async Task<CategoryResponse?> GetCategoryByNameAsync(
     string categoryName,
     CancellationToken cancellationToken
   )
@@ -57,7 +57,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
     return category;
   }
 
-  public async Task<CategoryResponse> CreateCategory(
+  public async Task<CategoryResponse> CreateCategoryAsync(
     CreateCategoryRequest request,
     CancellationToken cancellationToken
   )
@@ -78,13 +78,13 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
     var savedCategory =
-      await GetCategoryByName(categoryName: request.Name, cancellationToken)
+      await GetCategoryByNameAsync(categoryName: request.Name, cancellationToken)
       ?? throw new InvalidOperationException("The transaction was created but could not be read.");
 
     return savedCategory;
   }
 
-  public async Task<CategoryResponse> UpdateCategory(
+  public async Task<CategoryResponse> UpdateCategoryAsync(
     UpdateCategoryRequest request,
     CancellationToken cancellationToken
   )
@@ -100,13 +100,13 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
     var updatedCategory =
-      await GetCategoryById(categoryId: category.Id, cancellationToken)
+      await GetCategoryByIdAsync(categoryId: category.Id, cancellationToken)
       ?? throw new InvalidOperationException("The transaction was created but could not be read.");
 
     return updatedCategory;
   }
 
-  public async Task<bool> DeleteCategory(int categoryId, CancellationToken cancellationToken)
+  public async Task<bool> DeleteCategoryAsync(int categoryId, CancellationToken cancellationToken)
   {
     var category =
       await _moneyContext.Categories.FirstOrDefaultAsync(
