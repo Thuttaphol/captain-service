@@ -6,4 +6,8 @@ public class Category
   public string Name { get; set; } = string.Empty;
 
   public ICollection<Transaction> Transactions { get; set; } = [];
+
+  //For AppUser foreign key and navigation property
+  public string AppUserId { get; set; } = string.Empty;
+  public AppUser AppUser { get; set; } = null!;
 }

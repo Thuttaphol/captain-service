@@ -8,7 +8,12 @@ public class Transaction
   public TransactionType TransactionType { get; set; }
   public decimal Amount { get; set; }
   public DateTime UpdatedDate { get; set; }
-  public int CategoryId { get; set; } //FK
 
+  //For CategoryId foreign key and navigation property
+  public int CategoryId { get; set; } //FK
   public Category Category { get; set; } = null!;
+
+  //For AppUser foreign key and navigation property
+  public string AppUserId { get; set; } = string.Empty;
+  public AppUser AppUser { get; set; } = null!;
 }

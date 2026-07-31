@@ -10,7 +10,7 @@ var connectionString =
 
 builder.Services.AddDbContext<MoneyDbContext>(options =>
 {
-  options.UseNpgsql(connectionString);
+  options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention();
 });
 
 // Add services to the container.
@@ -24,6 +24,8 @@ builder
     );
   });
 
+builder.Services.AddIdentityApiEndpoints<AppUser>().AddEntityFrameworkStores<MoneyDbContext>();
+
 //DI services
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -31,6 +33,8 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+
+app.MapGroup("/api/auth").MapIdentityApi<AppUser>();
 
 app.MapControllers();
 
