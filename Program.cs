@@ -1,5 +1,6 @@
 using Captain.Data;
 using Captain.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -25,11 +26,20 @@ builder
     );
   });
 
-builder.Services.AddIdentityApiEndpoints<AppUser>().AddEntityFrameworkStores<MoneyDbContext>();
+builder
+  .Services.AddIdentityApiEndpoints<AppUser>(options =>
+  {
+    options.SignIn.RequireConfirmedEmail = true;
+  })
+  .AddEntityFrameworkStores<MoneyDbContext>();
 
 //DI services
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+builder.Services.AddSingleton<IEmailSender<AppUser>, FakeConfirmEmailSender>();
+
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
