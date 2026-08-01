@@ -1,6 +1,7 @@
 using Captain.Data;
 using Captain.Services;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,5 +38,11 @@ app.UseHttpsRedirection();
 app.MapGroup("/api/auth").MapIdentityApi<AppUser>();
 
 app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+{
+  app.MapOpenApi();
+  app.MapScalarApiReference();
+}
 
 app.Run();
