@@ -3,7 +3,7 @@ using Captain.Models;
 
 namespace Captain.DTOs;
 
-public class UpdateCategoryRequest
+public record UpdateCategoryRequest
 {
   [Required]
   public int Id { get; set; }

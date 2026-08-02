@@ -4,10 +4,10 @@ namespace Captain.DTOs;
 
 public record TransactionResponse
 {
-  public required int Id;
-  public required string Title = string.Empty;
-  public required string Description = string.Empty;
-  public required decimal Amount;
-  public required TransactionType TransactionType;
-  public required int CategoryId;
+  public int Id;
+  public string Title = string.Empty;
+  public string Description = string.Empty;
+  public decimal Amount;
+  public TransactionType TransactionType;
+  public int CategoryId;
 }
