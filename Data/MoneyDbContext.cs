@@ -17,8 +17,6 @@ public class MoneyDbContext : IdentityUserContext<AppUser>
   {
     base.OnModelCreating(modelBuilder);
 
-    modelBuilder.HasDefaultSchema("identity");
-
     modelBuilder.ApplyConfigurationsFromAssembly(typeof(MoneyDbContext).Assembly);
 
     // Override Identity's explicitly configured table names.
