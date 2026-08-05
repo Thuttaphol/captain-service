@@ -9,10 +9,14 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
 {
   private readonly MoneyDbContext _moneyContext = moneyContext;
 
-  public async Task<List<CategoryResponse>> GetCategoriesAsync(CancellationToken cancellationToken)
+  public async Task<List<CategoryResponse>> GetCategoriesAsync(
+    string userId,
+    CancellationToken cancellationToken
+  )
   {
     List<CategoryResponse> response = await _moneyContext
       .Categories.AsNoTracking()
+      .Where(category => category.AppUserId == userId)
       .Select(category => new CategoryResponse { Id = category.Id, Name = category.Name })
       .ToListAsync(cancellationToken);
 
@@ -20,50 +24,43 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
   }
 
   public async Task<CategoryResponse?> GetCategoryByIdAsync(
+    string userId,
     int categoryId,
     CancellationToken cancellationToken
   )
   {
     CategoryResponse? category = await _moneyContext
       .Categories.AsNoTracking()
-      .Where(category => category.Id == categoryId)
+      .Where(category => category.Id == categoryId && category.AppUserId == userId)
       .Select(category => new CategoryResponse { Id = category.Id, Name = category.Name })
       .FirstOrDefaultAsync(cancellationToken);
-
-    if (category is null)
-    {
-      return null;
-    }
 
     return category;
   }
 
   public async Task<CategoryResponse?> GetCategoryByNameAsync(
+    string userId,
     string categoryName,
     CancellationToken cancellationToken
   )
   {
     CategoryResponse? category = await _moneyContext
       .Categories.AsNoTracking()
-      .Where(category => category.Name == categoryName)
+      .Where(category => category.Name == categoryName && category.AppUserId == userId)
       .Select(category => new CategoryResponse { Id = category.Id, Name = category.Name })
       .FirstOrDefaultAsync(cancellationToken);
-
-    if (category is null)
-    {
-      return null;
-    }
 
     return category;
   }
 
   public async Task<CategoryResponse> CreateCategoryAsync(
+    string userId,
     CreateCategoryRequest request,
     CancellationToken cancellationToken
   )
   {
     bool isCategoryExist = await _moneyContext.Categories.AnyAsync(
-      category => category.Name == request.Name,
+      category => category.Name == request.Name & category.AppUserId == userId,
       cancellationToken
     );
 
@@ -72,26 +69,25 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
       throw new Exception("The Category already exists");
     }
 
-    var category = new Category { Name = request.Name };
+    var category = new Category { Name = request.Name, AppUserId = userId };
 
     _moneyContext.Categories.Add(category);
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
-    var savedCategory =
-      await GetCategoryByNameAsync(categoryName: request.Name, cancellationToken)
-      ?? throw new InvalidOperationException("The transaction was created but could not be read.");
+    var response = new CategoryResponse { Id = category.Id, Name = category.Name };
 
-    return savedCategory;
+    return response;
   }
 
   public async Task<CategoryResponse> UpdateCategoryAsync(
+    string userId,
     UpdateCategoryRequest request,
     CancellationToken cancellationToken
   )
   {
     var category =
       await _moneyContext.Categories.FirstOrDefaultAsync(
-        category => category.Id == request.Id,
+        category => category.Id == request.Id && category.AppUserId == userId,
         cancellationToken
       ) ?? throw new Exception("Category not found");
 
@@ -99,30 +95,30 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
 
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
-    var updatedCategory =
-      await GetCategoryByIdAsync(categoryId: category.Id, cancellationToken)
-      ?? throw new InvalidOperationException("The transaction was created but could not be read.");
+    var response = new CategoryResponse { Id = category.Id, Name = category.Name };
 
-    return updatedCategory;
+    return response;
   }
 
-  public async Task<bool> DeleteCategoryAsync(int categoryId, CancellationToken cancellationToken)
+  public async Task<string> DeleteCategoryAsync(
+    string userId,
+    int categoryId,
+    CancellationToken cancellationToken
+  )
   {
-    var category =
-      await _moneyContext.Categories.FirstOrDefaultAsync(
-        category => category.Id == categoryId,
-        cancellationToken
-      ) ?? throw new Exception("Category not found");
+    var category = await _moneyContext.Categories.FirstOrDefaultAsync(
+      category => category.Id == categoryId && category.AppUserId == userId,
+      cancellationToken
+    );
 
     if (category is null)
     {
-      return false;
+      return "Category not found.";
     }
 
     _moneyContext.Remove(category);
-
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
-    return true;
+    return "Category deleted.";
   }
 }

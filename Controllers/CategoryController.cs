@@ -1,22 +1,34 @@
 using Captain.DTOs;
 using Captain.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Captain.controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CategoryController(ICategoryService categoryService) : ControllerBase
+[Authorize]
+public class CategoryController(ICategoryService categoryService, UserManager<AppUser> userManager)
+  : ControllerBase
 {
   private readonly ICategoryService _categoryService = categoryService;
+  private readonly UserManager<AppUser> _userManager = userManager;
+  private string UserId => _userManager.GetUserId(User)!;
 
   [HttpGet("get-all")]
   public async Task<ActionResult<CategoryResponse>> GetCategoriesAsync(
     CancellationToken cancellationToken
   )
   {
+    if (UserId is null)
+    {
+      return Unauthorized();
+    }
+
     var categories = await _categoryService.GetCategoriesAsync(
-      cancellationToken: cancellationToken
+      cancellationToken: cancellationToken,
+      userId: UserId
     );
 
     return Ok(categories);
@@ -28,8 +40,14 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     CancellationToken cancellationToken
   )
   {
+    if (UserId is null)
+    {
+      return Unauthorized();
+    }
+
     var category = await _categoryService.GetCategoryByIdAsync(
-      CategoryId: categoryId,
+      userId: UserId,
+      categoryId: categoryId,
       cancellationToken: cancellationToken
     );
 
@@ -47,8 +65,14 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     CancellationToken cancellationToken
   )
   {
+    if (UserId is null)
+    {
+      return Unauthorized();
+    }
+
     var createdCategory = await _categoryService.CreateCategoryAsync(
       request: request,
+      userId: UserId,
       cancellationToken: cancellationToken
     );
 
@@ -61,7 +85,13 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     CancellationToken cancellationToken
   )
   {
+    if (UserId is null)
+    {
+      return Unauthorized();
+    }
+
     var updatedCategory = await _categoryService.UpdateCategoryAsync(
+      userId: UserId,
       request: request,
       cancellationToken: cancellationToken
     );
@@ -80,7 +110,13 @@ public class CategoryController(ICategoryService categoryService) : ControllerBa
     CancellationToken cancellationToken
   )
   {
+    if (UserId is null)
+    {
+      return Unauthorized();
+    }
+
     var response = await _categoryService.DeleteCategoryAsync(
+      userId: UserId,
       categoryId: categoryId,
       cancellationToken: cancellationToken
     );

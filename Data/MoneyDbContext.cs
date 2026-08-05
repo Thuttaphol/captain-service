@@ -13,6 +13,14 @@ public class MoneyDbContext : IdentityUserContext<AppUser>
   public DbSet<Transaction> Transactions => Set<Transaction>();
   public DbSet<Category> Categories => Set<Category>();
 
+  protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+  {
+    base.ConfigureConventions(configurationBuilder);
+
+    //For every TransactionType property in the model is persisted as text.
+    configurationBuilder.Properties<TransactionType>().HaveConversion<string>();
+  }
+
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
     base.OnModelCreating(modelBuilder);

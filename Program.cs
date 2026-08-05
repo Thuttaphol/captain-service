@@ -45,6 +45,9 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapGroup("/api/auth").MapIdentityApi<AppUser>();
 
 app.MapControllers();

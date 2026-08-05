@@ -10,11 +10,13 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
   private readonly MoneyDbContext _moneyContext = moneyContext;
 
   public async Task<List<TransactionResponse>> GetTransactionsAsync(
+    string userId,
     CancellationToken cancellationToken
   )
   {
     List<TransactionResponse> response = await _moneyContext
       .Transactions.AsNoTracking()
+      .Where(transaction => transaction.AppUserId == userId)
       .OrderByDescending(transaction => transaction.UpdatedDate)
       .Select(transaction => new TransactionResponse
       {
@@ -31,13 +33,14 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
   }
 
   public async Task<TransactionResponse?> GetTransactionByIdAsync(
+    string userId,
     int transactionId,
     CancellationToken cancellationToken
   )
   {
     TransactionResponse? response = await _moneyContext
       .Transactions.AsNoTracking()
-      .Where(transaction => transaction.Id == transactionId)
+      .Where(transaction => transaction.Id == transactionId && transaction.AppUserId == userId)
       .Select(transaction => new TransactionResponse
       {
         Id = transaction.Id,
@@ -53,6 +56,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
   }
 
   public async Task<TransactionResponse> CreateTransactionAsync(
+    string userId,
     CreateTransactionRequest request,
     CancellationToken cancellationToken
   )
@@ -79,19 +83,27 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       // it using CategoryId. We do not need to load the full Category
       // before inserting.
       Category = null!,
+      AppUserId = userId,
     };
 
     _moneyContext.Transactions.Add(transaction);
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
-    var savedTransaction =
-      await GetTransactionByIdAsync(transaction.Id, cancellationToken)
-      ?? throw new InvalidOperationException("The transaction was created but could not be read.");
+    var response = new TransactionResponse
+    {
+      Id = transaction.Id,
+      Title = transaction.Title,
+      Description = transaction.Description,
+      Amount = transaction.Amount,
+      TransactionType = transaction.TransactionType,
+      CategoryId = transaction.CategoryId,
+    };
 
-    return savedTransaction;
+    return response;
   }
 
   public async Task<TransactionResponse> UpdateTransactionAsync(
+    string userId,
     UpdateTransactionRequest request,
     CancellationToken cancellationToken
   )
@@ -121,14 +133,21 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
-    var updatedTransaction =
-      await GetTransactionByIdAsync(transaction.Id, cancellationToken)
-      ?? throw new InvalidOperationException("The transaction was created but could not be read.");
+    var response = new TransactionResponse
+    {
+      Id = transaction.Id,
+      Title = transaction.Title,
+      Description = transaction.Description,
+      Amount = transaction.Amount,
+      TransactionType = transaction.TransactionType,
+      CategoryId = transaction.CategoryId,
+    };
 
-    return updatedTransaction;
+    return response;
   }
 
   public async Task<string> DeleteTransactionAsync(
+    string userId,
     int transactionId,
     CancellationToken cancellationToken
   )
@@ -147,6 +166,6 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
-    return "Transaction Deleted.";
+    return "Transaction deleted.";
   }
 }

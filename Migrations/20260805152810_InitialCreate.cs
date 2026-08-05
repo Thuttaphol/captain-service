@@ -142,7 +142,7 @@ namespace Captain.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     title = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     description = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    transaction_type = table.Column<int>(type: "integer", nullable: false),
+                    transaction_type = table.Column<string>(type: "text", nullable: false),
                     amount = table.Column<decimal>(type: "numeric(10,2)", precision: 10, scale: 2, nullable: false),
                     updated_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     category_id = table.Column<int>(type: "integer", nullable: false),

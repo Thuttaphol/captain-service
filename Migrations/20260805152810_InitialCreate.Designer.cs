@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Captain.Migrations
 {
     [DbContext(typeof(MoneyDbContext))]
-    [Migration("20260803105718_InitialCreate")]
+    [Migration("20260805152810_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -169,8 +169,9 @@ namespace Captain.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("title");
 
-                    b.Property<int>("TransactionType")
-                        .HasColumnType("integer")
+                    b.Property<string>("TransactionType")
+                        .IsRequired()
+                        .HasColumnType("text")
                         .HasColumnName("transaction_type");
 
                     b.Property<DateTime>("UpdatedDate")

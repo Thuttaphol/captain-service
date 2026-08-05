@@ -166,8 +166,9 @@ namespace Captain.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("title");
 
-                    b.Property<int>("TransactionType")
-                        .HasColumnType("integer")
+                    b.Property<string>("TransactionType")
+                        .IsRequired()
+                        .HasColumnType("text")
                         .HasColumnName("transaction_type");
 
                     b.Property<DateTime>("UpdatedDate")
