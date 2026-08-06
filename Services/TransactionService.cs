@@ -78,7 +78,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Amount = request.Amount,
       TransactionType = request.TransactionType,
       CategoryId = request.CategoryId,
-      UpdatedDate = DateTime.UtcNow,
+      UpdatedDate = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified),
       // Category is required by the C# property, but EF will associate
       // it using CategoryId. We do not need to load the full Category
       // before inserting.

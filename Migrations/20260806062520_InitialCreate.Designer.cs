@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Captain.Migrations
 {
     [DbContext(typeof(MoneyDbContext))]
-    [Migration("20260805152810_InitialCreate")]
+    [Migration("20260806062520_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -175,7 +175,7 @@ namespace Captain.Migrations
                         .HasColumnName("transaction_type");
 
                     b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("updated_date");
 
                     b.HasKey("Id")

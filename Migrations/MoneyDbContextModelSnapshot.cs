@@ -172,7 +172,7 @@ namespace Captain.Migrations
                         .HasColumnName("transaction_type");
 
                     b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("updated_date");
 
                     b.HasKey("Id")

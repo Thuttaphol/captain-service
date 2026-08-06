@@ -144,7 +144,7 @@ namespace Captain.Migrations
                     description = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     transaction_type = table.Column<string>(type: "text", nullable: false),
                     amount = table.Column<decimal>(type: "numeric(10,2)", precision: 10, scale: 2, nullable: false),
-                    updated_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     category_id = table.Column<int>(type: "integer", nullable: false),
                     app_user_id = table.Column<string>(type: "text", nullable: false)
                 },
