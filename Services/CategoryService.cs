@@ -17,7 +17,12 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
     List<CategoryResponse> response = await _moneyContext
       .Categories.AsNoTracking()
       .Where(category => category.AppUserId == userId)
-      .Select(category => new CategoryResponse { Id = category.Id, Name = category.Name })
+      .Select(category => new CategoryResponse
+      {
+        Id = category.Id,
+        Name = category.Name,
+        TransactionType = category.TransacionType,
+      })
       .ToListAsync(cancellationToken);
 
     return response;
@@ -32,7 +37,12 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
     CategoryResponse? category = await _moneyContext
       .Categories.AsNoTracking()
       .Where(category => category.Id == categoryId && category.AppUserId == userId)
-      .Select(category => new CategoryResponse { Id = category.Id, Name = category.Name })
+      .Select(category => new CategoryResponse
+      {
+        Id = category.Id,
+        Name = category.Name,
+        TransactionType = category.TransacionType,
+      })
       .FirstOrDefaultAsync(cancellationToken);
 
     return category;
@@ -47,7 +57,12 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
     CategoryResponse? category = await _moneyContext
       .Categories.AsNoTracking()
       .Where(category => category.Name == categoryName && category.AppUserId == userId)
-      .Select(category => new CategoryResponse { Id = category.Id, Name = category.Name })
+      .Select(category => new CategoryResponse
+      {
+        Id = category.Id,
+        Name = category.Name,
+        TransactionType = category.TransacionType,
+      })
       .FirstOrDefaultAsync(cancellationToken);
 
     return category;
@@ -74,7 +89,12 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
     _moneyContext.Categories.Add(category);
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
-    var response = new CategoryResponse { Id = category.Id, Name = category.Name };
+    var response = new CategoryResponse
+    {
+      Id = category.Id,
+      Name = category.Name,
+      TransactionType = category.TransacionType,
+    };
 
     return response;
   }
@@ -95,7 +115,12 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
 
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
-    var response = new CategoryResponse { Id = category.Id, Name = category.Name };
+    var response = new CategoryResponse
+    {
+      Id = category.Id,
+      Name = category.Name,
+      TransactionType = category.TransacionType,
+    };
 
     return response;
   }
