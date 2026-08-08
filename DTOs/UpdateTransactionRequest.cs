@@ -17,8 +17,5 @@ public record UpdateTransactionRequest
   [Range(0.01, 10_000_000)]
   public decimal Amount { get; set; }
 
-  [EnumDataType(typeof(TransactionType))]
-  public TransactionType TransactionType { get; set; }
-
   public int CategoryId { get; set; }
 }

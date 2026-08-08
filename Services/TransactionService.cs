@@ -24,7 +24,6 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Title = transaction.Title,
         Description = transaction.Description,
         Amount = transaction.Amount,
-        TransactionType = transaction.TransactionType,
         CategoryId = transaction.CategoryId,
       })
       .ToListAsync(cancellationToken);
@@ -47,7 +46,6 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Title = transaction.Title,
         Description = transaction.Description,
         Amount = transaction.Amount,
-        TransactionType = transaction.TransactionType,
         CategoryId = transaction.CategoryId,
       })
       .FirstOrDefaultAsync(cancellationToken);
@@ -76,7 +74,6 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Title = request.Title,
       Description = request.Description,
       Amount = request.Amount,
-      TransactionType = request.TransactionType,
       CategoryId = request.CategoryId,
       UpdatedDate = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified),
       // Category is required by the C# property, but EF will associate
@@ -95,7 +92,6 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Title = transaction.Title,
       Description = transaction.Description,
       Amount = transaction.Amount,
-      TransactionType = transaction.TransactionType,
       CategoryId = transaction.CategoryId,
     };
 
@@ -127,9 +123,8 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     transaction.Title = request.Title;
     transaction.Description = request.Description;
     transaction.Amount = request.Amount;
-    transaction.TransactionType = request.TransactionType;
     transaction.CategoryId = request.CategoryId;
-    transaction.UpdatedDate = DateTime.UtcNow;
+    transaction.UpdatedDate = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
 
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
@@ -139,7 +134,6 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Title = transaction.Title,
       Description = transaction.Description,
       Amount = transaction.Amount,
-      TransactionType = transaction.TransactionType,
       CategoryId = transaction.CategoryId,
     };
 

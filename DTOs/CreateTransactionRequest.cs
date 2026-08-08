@@ -17,9 +17,5 @@ public record CreateTransactionRequest
   public decimal Amount { get; set; }
 
   [Required]
-  [EnumDataType(typeof(TransactionType))]
-  public TransactionType TransactionType { get; set; }
-
-  [Required]
   public int CategoryId { get; set; }
 }
