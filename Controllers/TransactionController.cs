@@ -1,4 +1,5 @@
 using Captain.DTOs;
+using Captain.Exceptions;
 using Captain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -25,7 +26,7 @@ public class TransactionController(
   {
     if (UserId is null)
     {
-      return Unauthorized();
+      throw new ForbiddenException();
     }
 
     var transactions = await _transactionService.GetTransactionsAsync(
@@ -43,7 +44,7 @@ public class TransactionController(
   {
     if (UserId is null)
     {
-      return Unauthorized();
+      throw new ForbiddenException();
     }
 
     var transaction = await _transactionService.GetTransactionByIdAsync(
@@ -54,7 +55,7 @@ public class TransactionController(
 
     if (transaction is null)
     {
-      return NotFound();
+      throw new NotFoundException("No transaction found");
     }
 
     return Ok(transaction);
@@ -68,7 +69,7 @@ public class TransactionController(
   {
     if (UserId is null)
     {
-      return Unauthorized();
+      throw new ForbiddenException();
     }
 
     var createdTransaction = await _transactionService.CreateTransactionAsync(
@@ -88,7 +89,7 @@ public class TransactionController(
   {
     if (UserId is null)
     {
-      return Unauthorized();
+      throw new ForbiddenException();
     }
 
     var updatedTransaction = await _transactionService.UpdateTransactionAsync(
@@ -99,7 +100,7 @@ public class TransactionController(
 
     if (updatedTransaction is null)
     {
-      return NotFound();
+      throw new NotFoundException("No transaction found");
     }
     return updatedTransaction;
   }
@@ -112,15 +113,15 @@ public class TransactionController(
   {
     if (UserId is null)
     {
-      return Unauthorized();
+      throw new ForbiddenException();
     }
 
-    var response = await _transactionService.DeleteTransactionAsync(
+    var result = await _transactionService.DeleteTransactionAsync(
       userId: UserId,
       transactionId: transactionId,
       cancellationToken: cancellationToken
     );
 
-    return Ok(response);
+    return Ok(new { isDeleted = result });
   }
 }

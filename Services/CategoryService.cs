@@ -125,7 +125,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
     return response;
   }
 
-  public async Task<string> DeleteCategoryAsync(
+  public async Task<bool> DeleteCategoryAsync(
     string userId,
     int categoryId,
     CancellationToken cancellationToken
@@ -138,12 +138,12 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
 
     if (category is null)
     {
-      return "Category not found.";
+      return false;
     }
 
     _moneyContext.Remove(category);
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
-    return "Category deleted.";
+    return true;
   }
 }

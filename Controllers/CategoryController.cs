@@ -1,4 +1,5 @@
 using Captain.DTOs;
+using Captain.Exceptions;
 using Captain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -42,7 +43,7 @@ public class CategoryController(ICategoryService categoryService, UserManager<Ap
   {
     if (UserId is null)
     {
-      return Unauthorized();
+      throw new ForbiddenException();
     }
 
     var category = await _categoryService.GetCategoryByIdAsync(
@@ -53,7 +54,7 @@ public class CategoryController(ICategoryService categoryService, UserManager<Ap
 
     if (category is null)
     {
-      return NotFound();
+      throw new NotFoundException("No category found");
     }
 
     return Ok(category);
@@ -67,7 +68,7 @@ public class CategoryController(ICategoryService categoryService, UserManager<Ap
   {
     if (UserId is null)
     {
-      return Unauthorized();
+      throw new ForbiddenException();
     }
 
     var createdCategory = await _categoryService.CreateCategoryAsync(
@@ -87,7 +88,7 @@ public class CategoryController(ICategoryService categoryService, UserManager<Ap
   {
     if (UserId is null)
     {
-      return Unauthorized();
+      throw new ForbiddenException();
     }
 
     var updatedCategory = await _categoryService.UpdateCategoryAsync(
@@ -98,7 +99,7 @@ public class CategoryController(ICategoryService categoryService, UserManager<Ap
 
     if (updatedCategory is null)
     {
-      return NotFound();
+      throw new NotFoundException("No category found");
     }
 
     return Ok(updatedCategory);
@@ -112,15 +113,15 @@ public class CategoryController(ICategoryService categoryService, UserManager<Ap
   {
     if (UserId is null)
     {
-      return Unauthorized();
+      throw new ForbiddenException();
     }
 
-    var response = await _categoryService.DeleteCategoryAsync(
+    var result = await _categoryService.DeleteCategoryAsync(
       userId: UserId,
       categoryId: categoryId,
       cancellationToken: cancellationToken
     );
 
-    return Ok(response);
+    return Ok(new { isDeleted = result });
   }
 }

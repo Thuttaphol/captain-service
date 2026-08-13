@@ -23,7 +23,7 @@ public interface ITransactionService
     UpdateTransactionRequest request,
     CancellationToken cancellationToken
   );
-  Task<string> DeleteTransactionAsync(
+  Task<bool> DeleteTransactionAsync(
     string userId,
     int transactionId,
     CancellationToken cancellationToken

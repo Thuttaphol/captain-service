@@ -28,7 +28,7 @@ public interface ICategoryService
     UpdateCategoryRequest request,
     CancellationToken cancellationToken
   );
-  Task<string> DeleteCategoryAsync(
+  Task<bool> DeleteCategoryAsync(
     string userId,
     int categoryId,
     CancellationToken cancellationToken

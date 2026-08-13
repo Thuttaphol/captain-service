@@ -140,7 +140,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     return response;
   }
 
-  public async Task<string> DeleteTransactionAsync(
+  public async Task<bool> DeleteTransactionAsync(
     string userId,
     int transactionId,
     CancellationToken cancellationToken
@@ -153,13 +153,13 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 
     if (transaction is null)
     {
-      return "Transaction not found.";
+      return false;
     }
 
     _moneyContext.Transactions.Remove(transaction);
 
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
-    return "Transaction deleted.";
+    return true;
   }
 }

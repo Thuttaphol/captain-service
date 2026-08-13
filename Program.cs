@@ -1,4 +1,5 @@
 using Captain.Data;
+using Captain.Exceptions;
 using Captain.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,15 @@ builder
   })
   .AddEntityFrameworkStores<MoneyDbContext>();
 
+builder.Services.AddProblemDetails(options =>
+  options.CustomizeProblemDetails = context =>
+  {
+    context.ProblemDetails.Type = null;
+    context.ProblemDetails.Extensions.Clear();
+  }
+);
+builder.Services.AddExceptionHandler<AppExceptionHandler>();
+
 //DI services
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -44,6 +54,8 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+
+app.UseExceptionHandler();
 
 app.UseAuthentication();
 app.UseAuthorization();
