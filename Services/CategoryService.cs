@@ -112,6 +112,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
       ) ?? throw new Exception("Category not found");
 
     category.Name = request.Name;
+    category.TransacionType = request.TransactionType;
 
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
