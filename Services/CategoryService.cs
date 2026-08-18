@@ -1,5 +1,6 @@
 using Captain.Data;
 using Captain.DTOs;
+using Captain.Exceptions;
 using Captain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -81,7 +82,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
 
     if (isCategoryExist)
     {
-      throw new Exception("The Category already exists");
+      throw new ConflictException("Category already exists");
     }
 
     var category = new Category { Name = request.Name, AppUserId = userId };
@@ -109,7 +110,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
       await _moneyContext.Categories.FirstOrDefaultAsync(
         category => category.Id == request.Id && category.AppUserId == userId,
         cancellationToken
-      ) ?? throw new Exception("Category not found");
+      ) ?? throw new NotFoundException("Category not found");
 
     category.Name = request.Name;
     category.TransacionType = request.TransactionType;
