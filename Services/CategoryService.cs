@@ -85,7 +85,12 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
       throw new ConflictException("Category already exists");
     }
 
-    var category = new Category { Name = request.Name, AppUserId = userId };
+    var category = new Category
+    {
+      Name = request.Name,
+      AppUserId = userId,
+      TransacionType = request.TransactionType,
+    };
 
     _moneyContext.Categories.Add(category);
     await _moneyContext.SaveChangesAsync(cancellationToken);
