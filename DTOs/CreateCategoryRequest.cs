@@ -11,5 +11,5 @@ public record CreateCategoryRequest
 
   [Required]
   [EnumDataType(typeof(TransactionType))]
-  public TransactionType TransactionType { get; set; }
+  public TransactionType? TransactionType { get; set; }
 }
