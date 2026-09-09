@@ -6,10 +6,13 @@ namespace Captain.DTOs;
 public record CreateCategoryRequest
 {
   [Required]
-  [MinLength(3), MaxLength(30)]
+  [Length(3, 50, ErrorMessage = "The field Name must has length from 3 to 50.")]
   public string Name { get; set; } = string.Empty;
 
   [Required]
-  [EnumDataType(typeof(TransactionType))]
-  public TransactionType? TransactionType { get; set; }
+  [EnumDataType(
+    typeof(TransactionType),
+    ErrorMessage = "The TransactionType field must be Expense or Income."
+  )]
+  public required TransactionType? TransactionType { get; set; }
 }

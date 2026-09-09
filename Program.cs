@@ -2,6 +2,7 @@ using Captain.Data;
 using Captain.Exceptions;
 using Captain.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -25,7 +26,74 @@ builder
     options.JsonSerializerOptions.Converters.Add(
       new System.Text.Json.Serialization.JsonStringEnumConverter(allowIntegerValues: false)
     );
+
+    options.AllowInputFormatterExceptionMessages = false;
+  })
+  .ConfigureApiBehaviorOptions(option =>
+  {
+    option.InvalidModelStateResponseFactory = context =>
+    {
+      var errors = context
+        .ModelState.Where(entry => entry.Value?.Errors.Count > 0)
+        .GroupBy(entry => NormalizedModelStateKey(entry.Key))
+        .ToDictionary(
+          group => group.Key,
+          group =>
+            group
+              .SelectMany(entry =>
+                entry.Value!.Errors.Select(error =>
+                  CreateValidationMessage(entry.Key, error.ErrorMessage)
+                )
+              )
+              .Distinct()
+              .ToArray()
+        );
+
+      var problemDetails = new ValidationProblemDetails(errors)
+      {
+        Title = "Request Validation Failed",
+        Status = StatusCodes.Status400BadRequest,
+        Detail = "One or more request value is invalid.",
+      };
+
+      return new BadRequestObjectResult(problemDetails);
+    };
   });
+
+static string NormalizedModelStateKey(string key)
+{
+  if (key == "$")
+  {
+    return "body";
+  }
+  if (key.StartsWith("$"))
+  {
+    return key[2..];
+  }
+
+  return key;
+}
+
+static string CreateValidationMessage(string key, string frameworkMessage)
+{
+  if (key.StartsWith("$."))
+  {
+    var field = NormalizedModelStateKey(key);
+    return field switch
+    {
+      "transactionType" => "The TransactionType field must be Expense or Income.",
+      "body" => "Request body contains invalid JSON.",
+      _ => $"Invalid value for '{field}'.",
+    };
+  }
+
+  if (!string.IsNullOrWhiteSpace(frameworkMessage))
+  {
+    return frameworkMessage;
+  }
+
+  return $"Invalid value for '{NormalizedModelStateKey(key)}'";
+}
 
 builder
   .Services.AddIdentityApiEndpoints<AppUser>(options =>

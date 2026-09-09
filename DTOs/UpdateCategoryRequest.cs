@@ -9,10 +9,13 @@ public record UpdateCategoryRequest
   public int Id { get; set; }
 
   [Required]
-  [MinLength(3), MaxLength(30)]
+  [Length(3, 50, ErrorMessage = "The field Name must has length from 3 to 50.")]
   public string Name { get; set; } = string.Empty;
 
   [Required]
-  [EnumDataType(typeof(TransactionType))]
+  [EnumDataType(
+    typeof(TransactionType),
+    ErrorMessage = "The TransactionType field must be Expense or Income."
+  )]
   public TransactionType TransactionType { get; set; }
 }
