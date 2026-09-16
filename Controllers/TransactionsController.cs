@@ -10,7 +10,7 @@ namespace Captain.controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class TransactionController(
+public class TransactionsController(
   ITransactionService transactionService,
   UserManager<AppUser> userManager
 ) : ControllerBase
@@ -19,8 +19,9 @@ public class TransactionController(
   private readonly UserManager<AppUser> _userManager = userManager;
   private string UserId => _userManager.GetUserId(User)!;
 
-  [HttpGet("get-all")]
+  [HttpGet]
   public async Task<ActionResult<TransactionResponse>> GetTransactionsAsync(
+    [FromQuery] TransactionSearchQuery transactionSearchQuery,
     CancellationToken cancellationToken
   )
   {
@@ -31,6 +32,7 @@ public class TransactionController(
 
     var transactions = await _transactionService.GetTransactionsAsync(
       userId: UserId,
+      transactionSearchQuery: transactionSearchQuery,
       cancellationToken: cancellationToken
     );
     return Ok(transactions);

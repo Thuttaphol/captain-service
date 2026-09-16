@@ -1,4 +1,5 @@
 using Captain.DTOs;
+using Captain.Models;
 
 namespace Captain.Services;
 
@@ -6,6 +7,8 @@ public interface ICategoryService
 {
   Task<List<CategoryResponse>> GetCategoriesAsync(
     string userId,
+    string? categoryName,
+    TransactionType? transactionType,
     CancellationToken cancellationToken
   );
   Task<CategoryResponse?> GetCategoryByIdAsync(

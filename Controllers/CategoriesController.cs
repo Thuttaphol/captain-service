@@ -1,5 +1,6 @@
 using Captain.DTOs;
 using Captain.Exceptions;
+using Captain.Models;
 using Captain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,15 +11,18 @@ namespace Captain.controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class CategoryController(ICategoryService categoryService, UserManager<AppUser> userManager)
-  : ControllerBase
+public class CategoriesController(
+  ICategoryService categoryService,
+  UserManager<AppUser> userManager
+) : ControllerBase
 {
   private readonly ICategoryService _categoryService = categoryService;
   private readonly UserManager<AppUser> _userManager = userManager;
   private string UserId => _userManager.GetUserId(User)!;
 
-  [HttpGet("get-all")]
+  [HttpGet]
   public async Task<ActionResult<CategoryResponse>> GetCategoriesAsync(
+    [FromQuery] CategorySearchQuery categorySearchQuery,
     CancellationToken cancellationToken
   )
   {
@@ -26,18 +30,44 @@ public class CategoryController(ICategoryService categoryService, UserManager<Ap
     {
       return Unauthorized();
     }
+    TransactionType? transactionType = null;
 
-    var categories = await _categoryService.GetCategoriesAsync(
-      cancellationToken: cancellationToken,
-      userId: UserId
+    if (!string.IsNullOrWhiteSpace(categorySearchQuery.TransactionType))
+    {
+      var transactionTypeName = Enum.GetNames<TransactionType>()
+        .FirstOrDefault(name =>
+          string.Equals(
+            name,
+            categorySearchQuery.TransactionType,
+            StringComparison.OrdinalIgnoreCase
+          )
+        );
+
+      if (transactionTypeName is null)
+      {
+        ModelState.AddModelError(
+          nameof(categorySearchQuery.TransactionType),
+          "The TransactionType field must be Income or Expense."
+        );
+
+        return ValidationProblem(ModelState);
+      }
+
+      transactionType = Enum.Parse<TransactionType>(transactionTypeName);
+    }
+    var result = await _categoryService.GetCategoriesAsync(
+      userId: UserId,
+      categoryName: categorySearchQuery.Name,
+      transactionType: transactionType,
+      cancellationToken: cancellationToken
     );
 
-    return Ok(categories);
+    return Ok(result);
   }
 
   [HttpGet("{categoryId:int}")]
   public async Task<ActionResult<CategoryResponse>> GetCategoryByIdAsync(
-    int categoryId,
+    [FromRoute] int categoryId,
     CancellationToken cancellationToken
   )
   {

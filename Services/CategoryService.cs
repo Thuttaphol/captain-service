@@ -12,12 +12,28 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
 
   public async Task<List<CategoryResponse>> GetCategoriesAsync(
     string userId,
+    string? categoryName,
+    TransactionType? transactionType,
     CancellationToken cancellationToken
   )
   {
-    List<CategoryResponse> response = await _moneyContext
+    var query = _moneyContext
       .Categories.AsNoTracking()
-      .Where(category => category.AppUserId == userId)
+      .Where(category => category.AppUserId == userId);
+
+    if (!string.IsNullOrWhiteSpace(categoryName))
+    {
+      query = query.Where(category =>
+        EF.Functions.ILike(category.Name, $"%{categoryName.Trim()}%")
+      );
+    }
+
+    if (transactionType is not null)
+    {
+      query = query.Where(category => category.TransacionType == transactionType);
+    }
+
+    var responses = await query
       .Select(category => new CategoryResponse
       {
         Id = category.Id,
@@ -26,7 +42,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
       })
       .ToListAsync(cancellationToken);
 
-    return response;
+    return responses;
   }
 
   public async Task<CategoryResponse?> GetCategoryByIdAsync(

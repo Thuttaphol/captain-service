@@ -6,6 +6,7 @@ public interface ITransactionService
 {
   Task<List<TransactionResponse>> GetTransactionsAsync(
     string userId,
+    TransactionSearchQuery transactionSearchQuery,
     CancellationToken cancellationToken
   );
   Task<TransactionResponse?> GetTransactionByIdAsync(

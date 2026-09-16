@@ -11,12 +11,39 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 
   public async Task<List<TransactionResponse>> GetTransactionsAsync(
     string userId,
+    TransactionSearchQuery transactionSearchQuery,
     CancellationToken cancellationToken
   )
   {
-    List<TransactionResponse> response = await _moneyContext
+    var query = _moneyContext
       .Transactions.AsNoTracking()
-      .Where(transaction => transaction.AppUserId == userId)
+      .Where(transaction => transaction.AppUserId == userId);
+
+    if (!string.IsNullOrWhiteSpace(transactionSearchQuery.Title))
+    {
+      query = query.Where(transaction =>
+        EF.Functions.ILike(transaction.Title, $"%{transactionSearchQuery.Title.Trim()}%")
+      );
+    }
+
+    if (!string.IsNullOrWhiteSpace(transactionSearchQuery.Description))
+    {
+      query = query.Where(transaction =>
+        EF.Functions.ILike(
+          transaction.Description,
+          $"%{transactionSearchQuery.Description.Trim()}%"
+        )
+      );
+    }
+
+    if (transactionSearchQuery.CategoryId is not null)
+    {
+      query = query.Where(transaction =>
+        transaction.CategoryId == transactionSearchQuery.CategoryId
+      );
+    }
+
+    List<TransactionResponse> response = await query
       .OrderByDescending(transaction => transaction.UpdatedDate)
       .Select(transaction => new TransactionResponse
       {
