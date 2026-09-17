@@ -30,6 +30,38 @@ public class TransactionsController(
       throw new ForbiddenException();
     }
 
+    if (transactionSearchQuery.Reference < 0 && transactionSearchQuery.PageSize <= 0)
+    {
+      ModelState.AddModelError(
+        nameof(transactionSearchQuery.Reference),
+        "The Reference field lowest value is 0."
+      );
+      ModelState.AddModelError(
+        nameof(transactionSearchQuery.PageSize),
+        "The Pagesize must greater than 0."
+      );
+
+      return ValidationProblem(ModelState);
+    }
+    else if (transactionSearchQuery.Reference < 0)
+    {
+      ModelState.AddModelError(
+        nameof(transactionSearchQuery.Reference),
+        "The Reference field lowest value is 0."
+      );
+
+      return ValidationProblem(ModelState);
+    }
+    else if (transactionSearchQuery.PageSize <= 0)
+    {
+      ModelState.AddModelError(
+        nameof(transactionSearchQuery.PageSize),
+        "The Pagesize must greater than 0."
+      );
+
+      return ValidationProblem(ModelState);
+    }
+
     var transactions = await _transactionService.GetTransactionsWithKeysetAsync(
       userId: UserId,
       transactionSearchQuery: transactionSearchQuery,
