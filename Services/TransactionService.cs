@@ -197,4 +197,41 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 
     return true;
   }
+
+  public async Task<PageResponseOffsetResponse<TransactionResponse>> GetTransactionsWithOffsetAsync(
+    string userId,
+    PageResponseOffsetQuery pageResponseOffsetQuery,
+    CancellationToken cancellationToken
+  )
+  {
+    var totalRecords = await _moneyContext
+      .Transactions.AsNoTracking()
+      .CountAsync(cancellationToken);
+
+    var transactions = await _moneyContext
+      .Transactions.AsNoTracking()
+      .OrderBy(transaction => transaction.Id)
+      .Skip((pageResponseOffsetQuery.PageNumber - 1) * pageResponseOffsetQuery.PageSize)
+      .Take(pageResponseOffsetQuery.PageSize)
+      .Select(transaction => new TransactionResponse
+      {
+        Id = transaction.Id,
+        Title = transaction.Title,
+        Description = transaction.Description,
+        Amount = transaction.Amount,
+        CategoryId = transaction.CategoryId,
+      })
+      .ToListAsync(cancellationToken);
+
+    var response = new PageResponseOffsetResponse<TransactionResponse>
+    {
+      PageNumber = pageResponseOffsetQuery.PageNumber,
+      PageSize = pageResponseOffsetQuery.PageSize,
+      TotalRecords = totalRecords,
+      TotalPages = (int)
+        Math.Ceiling((decimal)totalRecords / (decimal)pageResponseOffsetQuery.PageSize),
+      Data = transactions,
+    };
+    return response;
+  }
 }

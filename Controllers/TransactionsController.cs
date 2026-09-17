@@ -158,4 +158,57 @@ public class TransactionsController(
 
     return Ok(new { isDeleted = result });
   }
+
+  [HttpGet("offset")]
+  public async Task<
+    ActionResult<PageResponseOffsetResponse<TransactionResponse>>
+  > GetTransactionsOffsetAsync(
+    [FromQuery] PageResponseOffsetQuery pageResponseOffsetQuery,
+    CancellationToken cancellationToken
+  )
+  {
+    if (UserId is null)
+    {
+      throw new ForbiddenException();
+    }
+
+    if (pageResponseOffsetQuery.PageNumber <= 0 && pageResponseOffsetQuery.PageSize <= 0)
+    {
+      ModelState.AddModelError(
+        nameof(pageResponseOffsetQuery.PageNumber),
+        "The PageNumber field must greater than 0."
+      );
+      ModelState.AddModelError(
+        nameof(pageResponseOffsetQuery.PageSize),
+        "The PageSize field must greater than 0."
+      );
+
+      return ValidationProblem(ModelState);
+    }
+    else if (pageResponseOffsetQuery.PageNumber <= 0)
+    {
+      ModelState.AddModelError(
+        nameof(pageResponseOffsetQuery.PageNumber),
+        "The PageNumber field must greater than 0."
+      );
+
+      return ValidationProblem(ModelState);
+    }
+    else if (pageResponseOffsetQuery.PageSize <= 0)
+    {
+      ModelState.AddModelError(
+        nameof(pageResponseOffsetQuery.PageSize),
+        "The PageSize field must greater than 0."
+      );
+
+      return ValidationProblem(ModelState);
+    }
+
+    var transactions = await _transactionService.GetTransactionsWithOffsetAsync(
+      userId: UserId,
+      pageResponseOffsetQuery: pageResponseOffsetQuery,
+      cancellationToken: cancellationToken
+    );
+    return Ok(transactions);
+  }
 }

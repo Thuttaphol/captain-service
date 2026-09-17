@@ -29,4 +29,10 @@ public interface ITransactionService
     int transactionId,
     CancellationToken cancellationToken
   );
+
+  Task<PageResponseOffsetResponse<TransactionResponse>> GetTransactionsWithOffsetAsync(
+    string userId,
+    PageResponseOffsetQuery pageResponseOffsetQuery,
+    CancellationToken cancellationToken
+  );
 }
