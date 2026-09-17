@@ -234,4 +234,30 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     };
     return response;
   }
+
+  public async Task<TotalBalanceResponse> CalculateTotalBalance(
+    string userId,
+    CancellationToken cancellationToken
+  )
+  {
+    var transactions = await _moneyContext
+      .Transactions.AsNoTracking()
+      .Where(transaction => transaction.AppUserId == userId)
+      .Select(transaction => new { transaction.Category.TransacionType, transaction.Amount })
+      .ToListAsync(cancellationToken);
+
+    var incomeTransactions = transactions
+      .Where(t => t.TransacionType == TransactionType.Income)
+      .Select(t => t.Amount);
+    var expenseTransactions = transactions
+      .Where(t => t.TransacionType == TransactionType.Expense)
+      .Select(t => t.Amount);
+
+    var totalIncome = incomeTransactions.Sum();
+    var totalExpense = expenseTransactions.Sum();
+
+    var totalBalance = totalIncome - totalExpense;
+
+    return new TotalBalanceResponse { TotalBalance = totalBalance };
+  }
 }

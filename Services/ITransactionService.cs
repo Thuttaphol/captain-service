@@ -35,4 +35,9 @@ public interface ITransactionService
     PageResponseOffsetQuery pageResponseOffsetQuery,
     CancellationToken cancellationToken
   );
+
+  Task<TotalBalanceResponse> CalculateTotalBalance(
+    string userId,
+    CancellationToken cancellationToken
+  );
 }

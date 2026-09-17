@@ -211,4 +211,17 @@ public class TransactionsController(
     );
     return Ok(transactions);
   }
+
+  [HttpGet("total-balance")]
+  public async Task<ActionResult<TotalBalanceResponse>> TotalBalance(
+    CancellationToken cancellationToken
+  )
+  {
+    var totalBalance = await _transactionService.CalculateTotalBalance(
+      userId: UserId,
+      cancellationToken: cancellationToken
+    );
+
+    return Ok(totalBalance);
+  }
 }
