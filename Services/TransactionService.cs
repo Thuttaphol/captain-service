@@ -9,7 +9,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 {
   private readonly MoneyDbContext _moneyContext = moneyContext;
 
-  public async Task<List<TransactionResponse>> GetTransactionsAsync(
+  public async Task<PageResponseKeysetResponse<TransactionResponse>> GetTransactionsWithKeysetAsync(
     string userId,
     TransactionSearchQuery transactionSearchQuery,
     CancellationToken cancellationToken
@@ -17,7 +17,9 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
   {
     var query = _moneyContext
       .Transactions.AsNoTracking()
-      .Where(transaction => transaction.AppUserId == userId);
+      .Where(transaction => transaction.AppUserId == userId)
+      .Where(transaction => transaction.Id > transactionSearchQuery.Reference)
+      .Take(transactionSearchQuery.PageSize);
 
     if (!string.IsNullOrWhiteSpace(transactionSearchQuery.Title))
     {
@@ -43,8 +45,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       );
     }
 
-    List<TransactionResponse> response = await query
-      .OrderByDescending(transaction => transaction.UpdatedDate)
+    var transactions = await query
       .Select(transaction => new TransactionResponse
       {
         Id = transaction.Id,
@@ -55,6 +56,13 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       })
       .ToListAsync(cancellationToken);
 
+    var newReference = transactions.Count != 0 ? transactions.Last().Id : 0;
+
+    var response = new PageResponseKeysetResponse<TransactionResponse>
+    {
+      Data = transactions,
+      Reference = newReference,
+    };
     return response;
   }
 
@@ -188,37 +196,5 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
     return true;
-  }
-
-  public async Task<PageResponseKeysetResponse<TransactionResponse>> GetWithKeysetPagination(
-    int reference,
-    int pageSize,
-    string userId,
-    CancellationToken cancellationToken
-  )
-  {
-    var transactions = await _moneyContext
-      .Transactions.AsNoTracking()
-      .Where(transaction => transaction.Id > reference)
-      .Take(pageSize)
-      .Select(transaction => new TransactionResponse
-      {
-        Id = transaction.Id,
-        Title = transaction.Title,
-        Description = transaction.Description,
-        Amount = transaction.Amount,
-        CategoryId = transaction.CategoryId,
-      })
-      .ToListAsync(cancellationToken);
-
-    var newReference = transactions.Count != 0 ? transactions.Last().Id : 0;
-
-    var response = new PageResponseKeysetResponse<TransactionResponse>
-    {
-      Data = transactions,
-      Reference = newReference,
-    };
-
-    return response;
   }
 }

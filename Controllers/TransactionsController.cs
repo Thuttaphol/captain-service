@@ -30,7 +30,7 @@ public class TransactionsController(
       throw new ForbiddenException();
     }
 
-    var transactions = await _transactionService.GetTransactionsAsync(
+    var transactions = await _transactionService.GetTransactionsWithKeysetAsync(
       userId: UserId,
       transactionSearchQuery: transactionSearchQuery,
       cancellationToken: cancellationToken
@@ -125,28 +125,5 @@ public class TransactionsController(
     );
 
     return Ok(new { isDeleted = result });
-  }
-
-  [HttpGet("paging")]
-  public async Task<
-    ActionResult<PageResponseKeysetResponse<TransactionResponse>>
-  > GetWithKeysetPagination(
-    [FromQuery] TransactionPageKeysetRequest request,
-    CancellationToken cancellationToken
-  )
-  {
-    if (UserId is null)
-    {
-      throw new ForbiddenException();
-    }
-
-    var response = await _transactionService.GetWithKeysetPagination(
-      reference: request.Reference,
-      pageSize: request.PageSize,
-      userId: UserId,
-      cancellationToken: cancellationToken
-    );
-
-    return Ok(response);
   }
 }
