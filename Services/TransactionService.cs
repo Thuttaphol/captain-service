@@ -232,6 +232,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Math.Ceiling((decimal)totalRecords / (decimal)pageResponseOffsetQuery.PageSize),
       Data = transactions,
     };
+
     return response;
   }
 

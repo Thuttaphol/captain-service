@@ -209,6 +209,7 @@ public class TransactionsController(
       pageResponseOffsetQuery: pageResponseOffsetQuery,
       cancellationToken: cancellationToken
     );
+
     return Ok(transactions);
   }
 
