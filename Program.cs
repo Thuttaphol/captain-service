@@ -22,6 +22,8 @@ builder.Services.AddApplicationServices();
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
@@ -34,6 +36,8 @@ app.UseAuthorization();
 app.MapGroup("/api/auth").MapIdentityApi<AppUser>();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health");
 
 if (app.Environment.IsDevelopment())
 {
