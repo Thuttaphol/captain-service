@@ -189,4 +189,36 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 
     return true;
   }
+
+  public async Task<PageResponseKeysetResponse<TransactionResponse>> GetWithKeysetPagination(
+    int reference,
+    int pageSize,
+    string userId,
+    CancellationToken cancellationToken
+  )
+  {
+    var transactions = await _moneyContext
+      .Transactions.AsNoTracking()
+      .Where(transaction => transaction.Id > reference)
+      .Take(pageSize)
+      .Select(transaction => new TransactionResponse
+      {
+        Id = transaction.Id,
+        Title = transaction.Title,
+        Description = transaction.Description,
+        Amount = transaction.Amount,
+        CategoryId = transaction.CategoryId,
+      })
+      .ToListAsync(cancellationToken);
+
+    var newReference = transactions.Count != 0 ? transactions.Last().Id : 0;
+
+    var response = new PageResponseKeysetResponse<TransactionResponse>
+    {
+      Data = transactions,
+      Reference = newReference,
+    };
+
+    return response;
+  }
 }
