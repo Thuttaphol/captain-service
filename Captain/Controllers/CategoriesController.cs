@@ -1,9 +1,9 @@
+using System.Security.Claims;
 using Captain.DTOs;
 using Captain.Exceptions;
 using Captain.Models;
 using Captain.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Captain.controllers;
@@ -11,14 +11,12 @@ namespace Captain.controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class CategoriesController(
-  ICategoryService categoryService,
-  UserManager<AppUser> userManager
-) : ControllerBase
+public class CategoriesController(ICategoryService categoryService) : ControllerBase
 {
   private readonly ICategoryService _categoryService = categoryService;
-  private readonly UserManager<AppUser> _userManager = userManager;
-  private string UserId => _userManager.GetUserId(User)!;
+  private string UserId =>
+    User.FindFirstValue(ClaimTypes.NameIdentifier)
+    ?? throw new InvalidOperationException("Authenticated user does not contain a user ID claim.");
 
   [HttpGet]
   public async Task<ActionResult<CategoryResponse>> GetCategoriesAsync(
@@ -26,10 +24,6 @@ public class CategoriesController(
     CancellationToken cancellationToken
   )
   {
-    if (UserId is null)
-    {
-      return Unauthorized();
-    }
     TransactionType? transactionType = null;
 
     if (!string.IsNullOrWhiteSpace(categorySearchQuery.TransactionType))
@@ -71,11 +65,6 @@ public class CategoriesController(
     CancellationToken cancellationToken
   )
   {
-    if (UserId is null)
-    {
-      throw new ForbiddenException();
-    }
-
     var category = await _categoryService.GetCategoryByIdAsync(
       userId: UserId,
       categoryId: categoryId,
@@ -96,11 +85,6 @@ public class CategoriesController(
     CancellationToken cancellationToken
   )
   {
-    if (UserId is null)
-    {
-      throw new ForbiddenException();
-    }
-
     var createdCategory = await _categoryService.CreateCategoryAsync(
       request: request,
       userId: UserId,
@@ -116,11 +100,6 @@ public class CategoriesController(
     CancellationToken cancellationToken
   )
   {
-    if (UserId is null)
-    {
-      throw new ForbiddenException();
-    }
-
     var updatedCategory = await _categoryService.UpdateCategoryAsync(
       userId: UserId,
       request: request,
@@ -141,11 +120,6 @@ public class CategoriesController(
     CancellationToken cancellationToken
   )
   {
-    if (UserId is null)
-    {
-      throw new ForbiddenException();
-    }
-
     var result = await _categoryService.DeleteCategoryAsync(
       userId: UserId,
       categoryId: categoryId,

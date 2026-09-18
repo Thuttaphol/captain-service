@@ -1,8 +1,8 @@
+using System.Security.Claims;
 using Captain.DTOs;
 using Captain.Exceptions;
 using Captain.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Captain.controllers;
@@ -10,14 +10,12 @@ namespace Captain.controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class TransactionsController(
-  ITransactionService transactionService,
-  UserManager<AppUser> userManager
-) : ControllerBase
+public class TransactionsController(ITransactionService transactionService) : ControllerBase
 {
   private readonly ITransactionService _transactionService = transactionService;
-  private readonly UserManager<AppUser> _userManager = userManager;
-  private string UserId => _userManager.GetUserId(User)!;
+  private string UserId =>
+    User.FindFirstValue(ClaimTypes.NameIdentifier)
+    ?? throw new InvalidOperationException("Authenticated user does not contain a user ID claim.");
 
   [HttpGet]
   public async Task<ActionResult<TransactionResponse>> GetTransactionsAsync(
@@ -25,11 +23,6 @@ public class TransactionsController(
     CancellationToken cancellationToken
   )
   {
-    if (UserId is null)
-    {
-      throw new ForbiddenException();
-    }
-
     if (transactionSearchQuery.Reference < 0 && transactionSearchQuery.PageSize <= 0)
     {
       ModelState.AddModelError(
@@ -76,11 +69,6 @@ public class TransactionsController(
     CancellationToken cancellationToken
   )
   {
-    if (UserId is null)
-    {
-      throw new ForbiddenException();
-    }
-
     var transaction = await _transactionService.GetTransactionByIdAsync(
       userId: UserId,
       transactionId,
@@ -101,11 +89,6 @@ public class TransactionsController(
     CancellationToken cancellationToken
   )
   {
-    if (UserId is null)
-    {
-      throw new ForbiddenException();
-    }
-
     var createdTransaction = await _transactionService.CreateTransactionAsync(
       userId: UserId,
       request: request,
@@ -121,11 +104,6 @@ public class TransactionsController(
     CancellationToken cancellationToken
   )
   {
-    if (UserId is null)
-    {
-      throw new ForbiddenException();
-    }
-
     var updatedTransaction = await _transactionService.UpdateTransactionAsync(
       userId: UserId,
       request: request,
@@ -145,11 +123,6 @@ public class TransactionsController(
     CancellationToken cancellationToken
   )
   {
-    if (UserId is null)
-    {
-      throw new ForbiddenException();
-    }
-
     var result = await _transactionService.DeleteTransactionAsync(
       userId: UserId,
       transactionId: transactionId,
@@ -167,11 +140,6 @@ public class TransactionsController(
     CancellationToken cancellationToken
   )
   {
-    if (UserId is null)
-    {
-      throw new ForbiddenException();
-    }
-
     if (pageResponseOffsetQuery.PageNumber <= 0 && pageResponseOffsetQuery.PageSize <= 0)
     {
       ModelState.AddModelError(
