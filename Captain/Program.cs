@@ -24,11 +24,28 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddHealthChecks();
 
+builder.Services.AddCors(options =>
+{
+  options.AddPolicy(
+    name: "NextJs Origin",
+    policy =>
+    {
+      policy
+        .WithOrigins("http://localhost:3000")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+    }
+  );
+});
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 
 app.UseExceptionHandler();
+
+app.UseCors("NextJs Origin");
 
 app.UseAuthentication();
 app.UseAuthorization();
