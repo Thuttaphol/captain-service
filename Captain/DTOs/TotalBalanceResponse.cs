@@ -2,5 +2,5 @@ namespace Captain.DTOs;
 
 public record TotalBalanceResponse
 {
-  public decimal TotalBalance { get; init; }
+  public required decimal TotalBalance { get; init; }
 }

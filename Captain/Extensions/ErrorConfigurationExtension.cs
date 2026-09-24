@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Captain.Extensions;
@@ -13,8 +14,10 @@ public static class ErrorConfigurationExtension
         .AddControllers()
         .AddJsonOptions(options =>
         {
+          options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+
           options.JsonSerializerOptions.Converters.Add(
-            new System.Text.Json.Serialization.JsonStringEnumConverter(allowIntegerValues: false)
+            new JsonStringEnumConverter(allowIntegerValues: false)
           );
 
           options.AllowInputFormatterExceptionMessages = false;
@@ -49,6 +52,16 @@ public static class ErrorConfigurationExtension
             return new BadRequestObjectResult(problemDetails);
           };
         });
+
+      //Configure OpenAPI json for generate doc
+      services.ConfigureHttpJsonOptions(options =>
+      {
+        options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+
+        options.SerializerOptions.Converters.Add(
+          new JsonStringEnumConverter(allowIntegerValues: false)
+        );
+      });
 
       services.AddProblemDetails(options =>
         options.CustomizeProblemDetails = context =>
