@@ -1,11 +1,12 @@
 using System.Security.Claims;
+using Captain.Contracts.Errors;
 using Captain.DTOs;
 using Captain.Exceptions;
 using Captain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Captain.controllers;
+namespace Captain.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -18,7 +19,17 @@ public class TransactionsController(ITransactionService transactionService) : Co
     ?? throw new InvalidOperationException("Authenticated user does not contain a user ID claim.");
 
   [HttpGet]
-  public async Task<ActionResult<TransactionResponse>> GetTransactionsAsync(
+  [ProducesResponseType<List<TransactionResponse>>(
+    StatusCodes.Status200OK,
+    "application/json",
+    Description = "Transactions return successfully"
+  )]
+  [ProducesResponseType<ApiValidationErrorResponse>(
+    StatusCodes.Status400BadRequest,
+    "application/json",
+    Description = "Invalid paratmeters"
+  )]
+  public async Task<ActionResult<List<TransactionResponse>>> GetTransactionsAsync(
     [FromQuery] TransactionSearchQuery transactionSearchQuery,
     CancellationToken cancellationToken
   )
@@ -64,6 +75,16 @@ public class TransactionsController(ITransactionService transactionService) : Co
   }
 
   [HttpGet("{transactionId:int}")]
+  [ProducesResponseType<TransactionResponse>(
+    StatusCodes.Status200OK,
+    "application/json",
+    Description = "A transaction return successfully"
+  )]
+  [ProducesResponseType<ApiErrorResponse>(
+    StatusCodes.Status404NotFound,
+    "application/json",
+    Description = "Transaction not found"
+  )]
   public async Task<ActionResult<TransactionResponse>> GetTransactionByIdAsync(
     int transactionId,
     CancellationToken cancellationToken
@@ -84,6 +105,16 @@ public class TransactionsController(ITransactionService transactionService) : Co
   }
 
   [HttpPost]
+  [ProducesResponseType<TransactionResponse>(
+    StatusCodes.Status200OK,
+    "application/json",
+    Description = "Create transaction return successfully"
+  )]
+  [ProducesResponseType<ApiValidationErrorResponse>(
+    StatusCodes.Status400BadRequest,
+    "application/json",
+    Description = "Invalid paratmeters"
+  )]
   public async Task<ActionResult<TransactionResponse>> CreateTransactionAsync(
     CreateTransactionRequest request,
     CancellationToken cancellationToken
@@ -99,6 +130,21 @@ public class TransactionsController(ITransactionService transactionService) : Co
   }
 
   [HttpPut]
+  [ProducesResponseType<TransactionResponse>(
+    StatusCodes.Status200OK,
+    "application/json",
+    Description = "Update transaction return successfully"
+  )]
+  [ProducesResponseType<ApiValidationErrorResponse>(
+    StatusCodes.Status400BadRequest,
+    "application/json",
+    Description = "Invalid paratmeters"
+  )]
+  [ProducesResponseType<ApiErrorResponse>(
+    StatusCodes.Status404NotFound,
+    "application/json",
+    Description = "Transaction not found"
+  )]
   public async Task<ActionResult<TransactionResponse>> UpdateTransactionAsync(
     UpdateTransactionRequest request,
     CancellationToken cancellationToken
@@ -118,7 +164,17 @@ public class TransactionsController(ITransactionService transactionService) : Co
   }
 
   [HttpDelete("{transactionId:int}")]
-  public async Task<IActionResult> DeleteTransactionAsync(
+  [ProducesResponseType<TransactionDeleteResponse>(
+    StatusCodes.Status200OK,
+    "application/json",
+    Description = "Delete transaction successfully"
+  )]
+  [ProducesResponseType<ApiErrorResponse>(
+    StatusCodes.Status404NotFound,
+    "application/json",
+    Description = "Transaction not found"
+  )]
+  public async Task<ActionResult<TransactionDeleteResponse>> DeleteTransactionAsync(
     [FromRoute] int transactionId,
     CancellationToken cancellationToken
   )
@@ -129,10 +185,20 @@ public class TransactionsController(ITransactionService transactionService) : Co
       cancellationToken: cancellationToken
     );
 
-    return Ok(new { isDeleted = result });
+    return Ok(new TransactionDeleteResponse { IsDeleted = result });
   }
 
   [HttpGet("offset")]
+  [ProducesResponseType<PageResponseOffsetResponse<TransactionResponse>>(
+    StatusCodes.Status200OK,
+    "application/json",
+    Description = "Transactions return successfully"
+  )]
+  [ProducesResponseType<ApiValidationErrorResponse>(
+    StatusCodes.Status400BadRequest,
+    "application/json",
+    Description = "Invalid paratmeters"
+  )]
   public async Task<
     ActionResult<PageResponseOffsetResponse<TransactionResponse>>
   > GetTransactionsOffsetAsync(
@@ -172,16 +238,21 @@ public class TransactionsController(ITransactionService transactionService) : Co
       return ValidationProblem(ModelState);
     }
 
-    var transactions = await _transactionService.GetTransactionsWithOffsetAsync(
+    var response = await _transactionService.GetTransactionsWithOffsetAsync(
       userId: UserId,
       pageResponseOffsetQuery: pageResponseOffsetQuery,
       cancellationToken: cancellationToken
     );
 
-    return Ok(transactions);
+    return Ok(response);
   }
 
   [HttpGet("total-balance")]
+  [ProducesResponseType<TotalBalanceResponse>(
+    StatusCodes.Status200OK,
+    "application/json",
+    Description = "TotalBalance return successfully"
+  )]
   public async Task<ActionResult<TotalBalanceResponse>> TotalBalance(
     CancellationToken cancellationToken
   )
