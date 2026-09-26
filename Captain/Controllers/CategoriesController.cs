@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Captain.Contracts.Errors;
 using Captain.DTOs;
 using Captain.Exceptions;
 using Captain.Models;
@@ -6,7 +7,7 @@ using Captain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Captain.controllers;
+namespace Captain.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -19,7 +20,17 @@ public class CategoriesController(ICategoryService categoryService) : Controller
     ?? throw new InvalidOperationException("Authenticated user does not contain a user ID claim.");
 
   [HttpGet]
-  public async Task<ActionResult<CategoryResponse>> GetCategoriesAsync(
+  [ProducesResponseType<List<CategoryResponse>>(
+    StatusCodes.Status200OK,
+    "application/json",
+    Description = "Categories return successfully"
+  )]
+  [ProducesResponseType<ApiValidationErrorResponse>(
+    StatusCodes.Status400BadRequest,
+    "application/json",
+    Description = "Invalid paratmeters"
+  )]
+  public async Task<ActionResult<List<CategoryResponse>>> GetCategoriesAsync(
     [FromQuery] CategorySearchQuery categorySearchQuery,
     CancellationToken cancellationToken
   )
@@ -60,6 +71,16 @@ public class CategoriesController(ICategoryService categoryService) : Controller
   }
 
   [HttpGet("{categoryId:int}")]
+  [ProducesResponseType<CategoryResponse>(
+    StatusCodes.Status200OK,
+    "application/json",
+    Description = "A category return successfully"
+  )]
+  [ProducesResponseType<ApiErrorResponse>(
+    StatusCodes.Status404NotFound,
+    "application/json",
+    Description = "Category not found"
+  )]
   public async Task<ActionResult<CategoryResponse>> GetCategoryByIdAsync(
     [FromRoute] int categoryId,
     CancellationToken cancellationToken
@@ -80,6 +101,16 @@ public class CategoriesController(ICategoryService categoryService) : Controller
   }
 
   [HttpPost]
+  [ProducesResponseType<CategoryResponse>(
+    StatusCodes.Status200OK,
+    "application/json",
+    Description = "Create category return successfully"
+  )]
+  [ProducesResponseType<ApiValidationErrorResponse>(
+    StatusCodes.Status400BadRequest,
+    "application/json",
+    Description = "Invalid paratmeters"
+  )]
   public async Task<ActionResult<CategoryResponse>> CreateCategoryAsync(
     CreateCategoryRequest request,
     CancellationToken cancellationToken
@@ -95,6 +126,21 @@ public class CategoriesController(ICategoryService categoryService) : Controller
   }
 
   [HttpPut]
+  [ProducesResponseType<CategoryResponse>(
+    StatusCodes.Status200OK,
+    "application/json",
+    Description = "Update category return successfully"
+  )]
+  [ProducesResponseType<ApiValidationErrorResponse>(
+    StatusCodes.Status400BadRequest,
+    "application/json",
+    Description = "Invalid paratmeters"
+  )]
+  [ProducesResponseType<ApiErrorResponse>(
+    StatusCodes.Status404NotFound,
+    "application/json",
+    Description = "Category not found"
+  )]
   public async Task<ActionResult<CategoryResponse>> UpdateCategoryAsync(
     UpdateCategoryRequest request,
     CancellationToken cancellationToken
@@ -115,7 +161,7 @@ public class CategoriesController(ICategoryService categoryService) : Controller
   }
 
   [HttpDelete("{categoryId:int}")]
-  public async Task<IActionResult> DeleteCategoryAsync(
+  public async Task<ActionResult<CategoryDeleteResponse>> DeleteCategoryAsync(
     [FromRoute] int categoryId,
     CancellationToken cancellationToken
   )
@@ -126,6 +172,6 @@ public class CategoriesController(ICategoryService categoryService) : Controller
       cancellationToken: cancellationToken
     );
 
-    return Ok(new { isDeleted = result });
+    return Ok(new CategoryDeleteResponse { IsDeleted = result });
   }
 }
