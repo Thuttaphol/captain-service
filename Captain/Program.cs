@@ -9,14 +9,14 @@ builder.Logging.AddLoggingConfiguration();
 
 builder.Services.AddDatabase(builder.Configuration);
 
-builder.Services.AddErrorConfiguration();
-
 builder
   .Services.AddIdentityApiEndpoints<AppUser>(options =>
   {
     options.SignIn.RequireConfirmedEmail = true;
   })
   .AddEntityFrameworkStores<MoneyDbContext>();
+
+builder.Services.AddErrorConfiguration();
 
 builder.Services.AddExceptionHandler<AppExceptionHandler>();
 
