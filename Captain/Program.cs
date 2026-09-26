@@ -5,6 +5,8 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.AddLoggingConfiguration();
+
 builder.Services.AddDatabase(builder.Configuration);
 
 builder.Services.AddErrorConfiguration();

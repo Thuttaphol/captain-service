@@ -1,5 +1,6 @@
+using System.Diagnostics;
+using Captain.Contracts.Errors;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Captain.Exceptions;
 
@@ -44,48 +45,48 @@ internal sealed class AppExceptionHandler : IExceptionHandler
 
     var appException = exception as AppException;
 
-    var statusCode = appException?.StatusCode ?? StatusCodes.Status500InternalServerError;
     var title = appException?.Title ?? "An unexpected error occurred";
+    var statusCode = appException?.StatusCode ?? StatusCodes.Status500InternalServerError;
     var detail =
       appException?.Message ?? "An unexpected error occurred while processing your request.";
+    var traceId = Activity.Current?.TraceId.ToString() ?? httpContext.TraceIdentifier;
 
     //Log error
     if (statusCode >= StatusCodes.Status500InternalServerError)
     {
       _logger.LogError(
         exception,
-        "Unhandled exception on {requestMethod} {requestPath}",
+        "Unhandled exception on {requestMethod} {requestPath}, traceId: {traceId}",
         requestMethod,
-        requestPath
+        requestPath,
+        traceId
       );
     }
     else
     {
       _logger.LogWarning(
         exception,
-        "Handled {exceptionType} on {requestMethod} {requestPath}: {message}",
+        "Handled {exceptionType} on {requestMethod} {requestPath}: {message}, traceId: {traceId}",
         exception.GetType().Name,
         requestMethod,
         requestPath,
-        exception.Message
+        exception.Message,
+        traceId
       );
     }
 
     httpContext.Response.StatusCode = statusCode;
-    var problemDetails = new ProblemDetails
+
+    var response = new ApiErrorResponse
     {
-      Status = statusCode,
       Title = title,
+      Status = statusCode,
       Detail = detail,
+      TraceId = traceId,
     };
 
-    var problemDetailsContext = new ProblemDetailsContext
-    {
-      HttpContext = httpContext,
-      Exception = exception,
-      ProblemDetails = problemDetails,
-    };
+    await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
 
-    return await _problemDetailsService.TryWriteAsync(problemDetailsContext);
+    return true;
   }
 }

@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Captain.Contracts.Errors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Captain.Extensions;
@@ -11,7 +12,9 @@ public static class ErrorConfigurationExtension
     {
       // Configure all controller JSON request and response to use enum names as string instead of number
       services
-        .AddControllers()
+        .AddControllers(options =>
+          options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true
+        )
         .AddJsonOptions(options =>
         {
           options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.Strict;
@@ -20,6 +23,7 @@ public static class ErrorConfigurationExtension
             new JsonStringEnumConverter(allowIntegerValues: false)
           );
 
+          //turn off JSON deserialize error message
           options.AllowInputFormatterExceptionMessages = false;
         })
         .ConfigureApiBehaviorOptions(option =>
@@ -42,14 +46,15 @@ public static class ErrorConfigurationExtension
                     .ToArray()
               );
 
-            var problemDetails = new ValidationProblemDetails(errors)
+            var response = new ApiValidationErrorResponse()
             {
               Title = "Request Validation Failed",
               Status = StatusCodes.Status400BadRequest,
               Detail = "One or more request value is invalid.",
+              Errors = errors,
             };
 
-            return new BadRequestObjectResult(problemDetails);
+            return new BadRequestObjectResult(response);
           };
         });
 
