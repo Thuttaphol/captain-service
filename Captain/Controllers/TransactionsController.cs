@@ -34,20 +34,7 @@ public class TransactionsController(ITransactionService transactionService) : Co
     CancellationToken cancellationToken
   )
   {
-    if (transactionSearchQuery.Reference < 0 && transactionSearchQuery.PageSize <= 0)
-    {
-      ModelState.AddModelError(
-        nameof(transactionSearchQuery.Reference),
-        "The Reference field lowest value is 0."
-      );
-      ModelState.AddModelError(
-        nameof(transactionSearchQuery.PageSize),
-        "The Pagesize must greater than 0."
-      );
-
-      return ValidationProblem(ModelState);
-    }
-    else if (transactionSearchQuery.Reference < 0)
+    if (transactionSearchQuery.Reference < 0)
     {
       ModelState.AddModelError(
         nameof(transactionSearchQuery.Reference),
@@ -56,13 +43,18 @@ public class TransactionsController(ITransactionService transactionService) : Co
 
       return ValidationProblem(ModelState);
     }
-    else if (transactionSearchQuery.PageSize <= 0)
+    if (transactionSearchQuery.PageSize <= 0)
     {
       ModelState.AddModelError(
         nameof(transactionSearchQuery.PageSize),
         "The Pagesize must greater than 0."
       );
 
+      return ValidationProblem(ModelState);
+    }
+
+    if (!ModelState.IsValid)
+    {
       return ValidationProblem(ModelState);
     }
 
@@ -206,20 +198,7 @@ public class TransactionsController(ITransactionService transactionService) : Co
     CancellationToken cancellationToken
   )
   {
-    if (pageResponseOffsetQuery.PageNumber <= 0 && pageResponseOffsetQuery.PageSize <= 0)
-    {
-      ModelState.AddModelError(
-        nameof(pageResponseOffsetQuery.PageNumber),
-        "The PageNumber field must greater than 0."
-      );
-      ModelState.AddModelError(
-        nameof(pageResponseOffsetQuery.PageSize),
-        "The PageSize field must greater than 0."
-      );
-
-      return ValidationProblem(ModelState);
-    }
-    else if (pageResponseOffsetQuery.PageNumber <= 0)
+    if (pageResponseOffsetQuery.PageNumber <= 0)
     {
       ModelState.AddModelError(
         nameof(pageResponseOffsetQuery.PageNumber),
@@ -228,13 +207,18 @@ public class TransactionsController(ITransactionService transactionService) : Co
 
       return ValidationProblem(ModelState);
     }
-    else if (pageResponseOffsetQuery.PageSize <= 0)
+    if (pageResponseOffsetQuery.PageSize <= 0)
     {
       ModelState.AddModelError(
         nameof(pageResponseOffsetQuery.PageSize),
         "The PageSize field must greater than 0."
       );
 
+      return ValidationProblem(ModelState);
+    }
+
+    if (!ModelState.IsValid)
+    {
       return ValidationProblem(ModelState);
     }
 
