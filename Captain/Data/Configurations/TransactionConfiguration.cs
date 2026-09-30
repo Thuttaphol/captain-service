@@ -20,7 +20,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 
     builder
       .Property(transaction => transaction.UpdatedDate)
-      .HasColumnType("timestamp without time zone");
+      .HasColumnType("timestamp with time zone");
 
     builder
       .HasOne(transaction => transaction.Category)
