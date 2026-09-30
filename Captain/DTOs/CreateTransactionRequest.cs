@@ -12,7 +12,11 @@ public record CreateTransactionRequest
   public string Description { get; set; } = string.Empty;
 
   [Required]
-  [Range(0.01, 10_000_000, ErrorMessage = "The field Amount must be between 0.01 to 10,000,000")]
+  [Range(
+    0.01,
+    10_000_000,
+    ErrorMessage = "The field Amount must be between 0.01 to 10,000,000"
+  )]
   public decimal Amount { get; set; }
 
   [Required]

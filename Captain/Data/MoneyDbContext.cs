@@ -13,7 +13,9 @@ public class MoneyDbContext : IdentityUserContext<AppUser>
   public DbSet<Transaction> Transactions => Set<Transaction>();
   public DbSet<Category> Categories => Set<Category>();
 
-  protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+  protected override void ConfigureConventions(
+    ModelConfigurationBuilder configurationBuilder
+  )
   {
     base.ConfigureConventions(configurationBuilder);
 

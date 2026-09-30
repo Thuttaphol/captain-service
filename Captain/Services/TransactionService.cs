@@ -78,7 +78,9 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
   {
     TransactionResponse? response = await _moneyContext
       .Transactions.AsNoTracking()
-      .Where(transaction => transaction.Id == transactionId && transaction.AppUserId == userId)
+      .Where(transaction =>
+        transaction.Id == transactionId && transaction.AppUserId == userId
+      )
       .Select(transaction => new TransactionResponse
       {
         Id = transaction.Id,
@@ -105,7 +107,9 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 
     if (!isCategoryExist)
     {
-      throw new ArgumentException($"Category with ID {request.CategoryId} does not exist.");
+      throw new ArgumentException(
+        $"Category with ID {request.CategoryId} does not exist."
+      );
     }
 
     var transaction = new Transaction
@@ -150,7 +154,9 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 
     if (!isCategoryExist)
     {
-      throw new ArgumentException($"Category with ID {request.CategoryId} does not exist.");
+      throw new ArgumentException(
+        $"Category with ID {request.CategoryId} does not exist."
+      );
     }
 
     var transaction =
@@ -163,7 +169,10 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     transaction.Description = request.Description;
     transaction.Amount = request.Amount;
     transaction.CategoryId = request.CategoryId;
-    transaction.UpdatedDate = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified);
+    transaction.UpdatedDate = DateTime.SpecifyKind(
+      DateTime.UtcNow,
+      DateTimeKind.Unspecified
+    );
 
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
@@ -202,7 +211,9 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     return true;
   }
 
-  public async Task<PageResponseOffsetResponse<TransactionResponse>> GetTransactionsWithOffsetAsync(
+  public async Task<
+    PageResponseOffsetResponse<TransactionResponse>
+  > GetTransactionsWithOffsetAsync(
     string userId,
     PageResponseOffsetQuery pageResponseOffsetQuery,
     CancellationToken cancellationToken
@@ -248,7 +259,11 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     var transactions = await _moneyContext
       .Transactions.AsNoTracking()
       .Where(transaction => transaction.AppUserId == userId)
-      .Select(transaction => new { transaction.Category.TransacionType, transaction.Amount })
+      .Select(transaction => new
+      {
+        transaction.Category.TransacionType,
+        transaction.Amount,
+      })
       .ToListAsync(cancellationToken);
 
     var incomeTransactions = transactions

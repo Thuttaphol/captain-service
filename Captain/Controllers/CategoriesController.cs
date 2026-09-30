@@ -17,7 +17,9 @@ public class CategoriesController(ICategoryService categoryService) : Controller
   private readonly ICategoryService _categoryService = categoryService;
   private string UserId =>
     User.FindFirstValue(ClaimTypes.NameIdentifier)
-    ?? throw new InvalidOperationException("Authenticated user does not contain a user ID claim.");
+    ?? throw new InvalidOperationException(
+      "Authenticated user does not contain a user ID claim."
+    );
 
   [HttpGet]
   [ProducesResponseType<List<CategoryResponse>>(

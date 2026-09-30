@@ -11,12 +11,15 @@ namespace Captain.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class TransactionsController(ITransactionService transactionService) : ControllerBase
+public class TransactionsController(ITransactionService transactionService)
+  : ControllerBase
 {
   private readonly ITransactionService _transactionService = transactionService;
   private string UserId =>
     User.FindFirstValue(ClaimTypes.NameIdentifier)
-    ?? throw new InvalidOperationException("Authenticated user does not contain a user ID claim.");
+    ?? throw new InvalidOperationException(
+      "Authenticated user does not contain a user ID claim."
+    );
 
   [HttpGet]
   [ProducesResponseType<TransactionsPageKeysetResponse<TransactionResponse>>(

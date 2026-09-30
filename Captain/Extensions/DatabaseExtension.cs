@@ -11,7 +11,9 @@ public static class DatabaseExtension
     {
       var connectionString =
         configuration.GetConnectionString("PostgreSql")
-        ?? throw new InvalidOperationException("Connection string 'PostgreSql' was not found.");
+        ?? throw new InvalidOperationException(
+          "Connection string 'PostgreSql' was not found."
+        );
 
       services.AddDbContext<MoneyDbContext>(options =>
       {

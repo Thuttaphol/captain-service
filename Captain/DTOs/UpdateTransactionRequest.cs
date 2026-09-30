@@ -14,7 +14,11 @@ public record UpdateTransactionRequest
   [MaxLength(200, ErrorMessage = "The field Description must has max length up to 200.")]
   public string Description { get; set; } = string.Empty;
 
-  [Range(0.01, 10_000_000, ErrorMessage = "The field Amount must be between 0.01 to 10,000,000")]
+  [Range(
+    0.01,
+    10_000_000,
+    ErrorMessage = "The field Amount must be between 0.01 to 10,000,000"
+  )]
   public decimal Amount { get; set; }
 
   public int CategoryId { get; set; }

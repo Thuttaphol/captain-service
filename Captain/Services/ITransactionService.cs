@@ -4,7 +4,9 @@ namespace Captain.Services;
 
 public interface ITransactionService
 {
-  Task<TransactionsPageKeysetResponse<TransactionResponse>> GetTransactionsWithKeysetAsync(
+  Task<
+    TransactionsPageKeysetResponse<TransactionResponse>
+  > GetTransactionsWithKeysetAsync(
     string userId,
     TransactionSearchQuery transactionSearchQuery,
     CancellationToken cancellationToken

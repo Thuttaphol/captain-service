@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Authorization.Policy;
 
 namespace Captain.Authorization;
 
-public sealed class ApiAuthorizationMiddlewareResultHandler : IAuthorizationMiddlewareResultHandler
+public sealed class ApiAuthorizationMiddlewareResultHandler
+  : IAuthorizationMiddlewareResultHandler
 {
   private readonly AuthorizationMiddlewareResultHandler _defaultHandler = new();
 

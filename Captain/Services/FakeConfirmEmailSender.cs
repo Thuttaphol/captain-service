@@ -13,7 +13,11 @@ public class FakeConfirmEmailSender : IEmailSender<AppUser>
     _logger = logger;
   }
 
-  public Task SendConfirmationLinkAsync(AppUser user, string email, string confirmationLink)
+  public Task SendConfirmationLinkAsync(
+    AppUser user,
+    string email,
+    string confirmationLink
+  )
   {
     var decodedLink = WebUtility.HtmlDecode(confirmationLink);
 

@@ -33,7 +33,9 @@ internal sealed class AppExceptionHandler : IExceptionHandler
       && httpContext.RequestAborted.IsCancellationRequested
     )
     {
-      _logger.LogInformation($"Request {requestMethod} {requestPath} was aborted by client.");
+      _logger.LogInformation(
+        $"Request {requestMethod} {requestPath} was aborted by client."
+      );
 
       if (!httpContext.Response.HasStarted)
       {
@@ -48,7 +50,8 @@ internal sealed class AppExceptionHandler : IExceptionHandler
     var title = appException?.Title ?? "An unexpected error occurred";
     var statusCode = appException?.StatusCode ?? StatusCodes.Status500InternalServerError;
     var detail =
-      appException?.Message ?? "An unexpected error occurred while processing your request.";
+      appException?.Message
+      ?? "An unexpected error occurred while processing your request.";
     var traceId = Activity.Current?.TraceId.ToString() ?? httpContext.TraceIdentifier;
 
     //Log error
