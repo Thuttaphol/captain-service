@@ -9,7 +9,9 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 {
   private readonly MoneyDbContext _moneyContext = moneyContext;
 
-  public async Task<PageResponseKeysetResponse<TransactionResponse>> GetTransactionsWithKeysetAsync(
+  public async Task<
+    TransactionsPageKeysetResponse<TransactionResponse>
+  > GetTransactionsWithKeysetAsync(
     string userId,
     TransactionSearchQuery transactionSearchQuery,
     CancellationToken cancellationToken
@@ -57,11 +59,13 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       .ToListAsync(cancellationToken);
 
     var newReference = transactions.Count != 0 ? transactions.Last().Id : 0;
+    var hasMore = transactions.Count >= transactionSearchQuery.PageSize;
 
-    var response = new PageResponseKeysetResponse<TransactionResponse>
+    var response = new TransactionsPageKeysetResponse<TransactionResponse>
     {
-      Data = transactions,
       Reference = newReference,
+      HasMore = hasMore,
+      Data = transactions,
     };
     return response;
   }

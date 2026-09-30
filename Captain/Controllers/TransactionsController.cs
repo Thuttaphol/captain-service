@@ -19,7 +19,7 @@ public class TransactionsController(ITransactionService transactionService) : Co
     ?? throw new InvalidOperationException("Authenticated user does not contain a user ID claim.");
 
   [HttpGet]
-  [ProducesResponseType<List<TransactionResponse>>(
+  [ProducesResponseType<TransactionsPageKeysetResponse<TransactionResponse>>(
     StatusCodes.Status200OK,
     "application/json",
     Description = "Transactions return successfully"
@@ -29,7 +29,9 @@ public class TransactionsController(ITransactionService transactionService) : Co
     "application/json",
     Description = "Invalid paratmeters"
   )]
-  public async Task<ActionResult<List<TransactionResponse>>> GetTransactionsAsync(
+  public async Task<
+    ActionResult<TransactionsPageKeysetResponse<TransactionResponse>>
+  > GetTransactionsAsync(
     [FromQuery] TransactionSearchQuery transactionSearchQuery,
     CancellationToken cancellationToken
   )
