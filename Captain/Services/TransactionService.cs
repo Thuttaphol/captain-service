@@ -102,12 +102,12 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     CancellationToken cancellationToken
   )
   {
-    bool isCategoryExist = await _moneyContext.Categories.AnyAsync(
-      category => category.Id == request.CategoryId,
+    var category = await _moneyContext.Categories.FirstOrDefaultAsync(
+      category => category.Id == request.CategoryId && category.AppUserId == userId,
       cancellationToken
     );
 
-    if (!isCategoryExist)
+    if (category is null)
     {
       throw new ArgumentException(
         $"Category with ID {request.CategoryId} does not exist."
@@ -119,12 +119,8 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Title = request.Title,
       Description = request.Description,
       Amount = request.Amount,
-      CategoryId = request.CategoryId,
-      UpdatedDate = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified),
-      // Category is required by the C# property, but EF will associate
-      // it using CategoryId. We do not need to load the full Category
-      // before inserting.
-      Category = null!,
+      Category = category,
+      UpdatedDate = DateTime.UtcNow,
       AppUserId = userId,
     };
 

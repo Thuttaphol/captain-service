@@ -10,7 +10,7 @@ public class Transaction
 
   //For CategoryId foreign key and navigation property
   public int CategoryId { get; set; } //FK
-  public Category Category { get; set; } = null!;
+  public required Category Category { get; set; }
 
   //For AppUser foreign key and navigation property
   public string AppUserId { get; set; } = string.Empty;
