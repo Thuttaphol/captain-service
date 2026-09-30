@@ -54,7 +54,8 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Title = transaction.Title,
         Description = transaction.Description,
         Amount = transaction.Amount,
-        CategoryId = transaction.CategoryId,
+        CategoryName = transaction.Category.Name,
+        UpdatedDate = transaction.UpdatedDate,
       })
       .ToListAsync(cancellationToken);
 
@@ -87,7 +88,8 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Title = transaction.Title,
         Description = transaction.Description,
         Amount = transaction.Amount,
-        CategoryId = transaction.CategoryId,
+        CategoryName = transaction.Category.Name,
+        UpdatedDate = transaction.UpdatedDate,
       })
       .FirstOrDefaultAsync(cancellationToken);
 
@@ -135,7 +137,8 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Title = transaction.Title,
       Description = transaction.Description,
       Amount = transaction.Amount,
-      CategoryId = transaction.CategoryId,
+      CategoryName = transaction.Category.Name,
+      UpdatedDate = transaction.UpdatedDate,
     };
 
     return response;
@@ -182,7 +185,8 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Title = transaction.Title,
       Description = transaction.Description,
       Amount = transaction.Amount,
-      CategoryId = transaction.CategoryId,
+      CategoryName = transaction.Category.Name,
+      UpdatedDate = transaction.UpdatedDate,
     };
 
     return response;
@@ -234,7 +238,8 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Title = transaction.Title,
         Description = transaction.Description,
         Amount = transaction.Amount,
-        CategoryId = transaction.CategoryId,
+        CategoryName = transaction.Category.Name,
+        UpdatedDate = transaction.UpdatedDate,
       })
       .ToListAsync(cancellationToken);
 
