@@ -6,7 +6,7 @@ public class Transaction
   public required string Title { get; set; }
   public string Description { get; set; } = string.Empty;
   public decimal Amount { get; set; }
-  public DateTime UpdatedDate { get; set; }
+  public DateTime TransactionDate { get; set; }
 
   //For CategoryId foreign key and navigation property
   public int CategoryId { get; set; } //FK

@@ -19,7 +19,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
     builder.Property(transaction => transaction.Amount).HasPrecision(10, 2);
 
     builder
-      .Property(transaction => transaction.UpdatedDate)
+      .Property(transaction => transaction.TransactionDate)
       .HasColumnType("timestamp with time zone");
 
     builder
