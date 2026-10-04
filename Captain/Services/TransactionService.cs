@@ -19,10 +19,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
   {
     var query = _moneyContext
       .Transactions.AsNoTracking()
-      .Where(transaction => transaction.AppUserId == userId)
-      .Where(transaction => transaction.Id > transactionSearchQuery.Reference)
-      .OrderBy(transaction => transaction.Id)
-      .Take(transactionSearchQuery.PageSize);
+      .Where(transaction => transaction.AppUserId == userId);
 
     if (!string.IsNullOrWhiteSpace(transactionSearchQuery.Title))
     {
@@ -48,7 +45,16 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       );
     }
 
+    if (transactionSearchQuery.Reference is not null)
+    {
+      query = query.Where(transaction =>
+        transaction.Id < transactionSearchQuery.Reference
+      );
+    }
+
     var transactions = await query
+      .OrderByDescending(transaction => transaction.Id)
+      .Take(transactionSearchQuery.PageSize)
       .Select(transaction => new TransactionResponse
       {
         Id = transaction.Id,

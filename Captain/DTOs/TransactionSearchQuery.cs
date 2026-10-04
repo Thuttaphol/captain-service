@@ -9,8 +9,7 @@ public record TransactionSearchQuery
   public int? CategoryId { get; init; }
 
   //paging
-  [BindRequired]
-  public int Reference { get; init; }
+  public int? Reference { get; init; }
 
   [BindRequired]
   public int PageSize { get; init; }
