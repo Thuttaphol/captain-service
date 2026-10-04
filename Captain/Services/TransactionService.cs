@@ -21,6 +21,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       .Transactions.AsNoTracking()
       .Where(transaction => transaction.AppUserId == userId)
       .Where(transaction => transaction.Id > transactionSearchQuery.Reference)
+      .OrderBy(transaction => transaction.Id)
       .Take(transactionSearchQuery.PageSize);
 
     if (!string.IsNullOrWhiteSpace(transactionSearchQuery.Title))
@@ -55,7 +56,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Description = transaction.Description,
         Amount = transaction.Amount,
         CategoryName = transaction.Category.Name,
-        UpdatedDate = transaction.UpdatedDate,
+        TransactionDate = transaction.TransactionDate,
       })
       .ToListAsync(cancellationToken);
 
@@ -89,7 +90,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Description = transaction.Description,
         Amount = transaction.Amount,
         CategoryName = transaction.Category.Name,
-        UpdatedDate = transaction.UpdatedDate,
+        TransactionDate = transaction.TransactionDate,
       })
       .FirstOrDefaultAsync(cancellationToken);
 
@@ -120,7 +121,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Description = request.Description,
       Amount = request.Amount,
       Category = category,
-      UpdatedDate = DateTime.UtcNow,
+      TransactionDate = request.TransactionDate.UtcDateTime,
       AppUserId = userId,
     };
 
@@ -134,7 +135,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Description = transaction.Description,
       Amount = transaction.Amount,
       CategoryName = transaction.Category.Name,
-      UpdatedDate = transaction.UpdatedDate,
+      TransactionDate = transaction.TransactionDate,
     };
 
     return response;
@@ -168,10 +169,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     transaction.Description = request.Description;
     transaction.Amount = request.Amount;
     transaction.CategoryId = request.CategoryId;
-    transaction.UpdatedDate = DateTime.SpecifyKind(
-      DateTime.UtcNow,
-      DateTimeKind.Unspecified
-    );
+    transaction.TransactionDate = request.TransactionDate.UtcDateTime;
 
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
@@ -182,7 +180,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Description = transaction.Description,
       Amount = transaction.Amount,
       CategoryName = transaction.Category.Name,
-      UpdatedDate = transaction.UpdatedDate,
+      TransactionDate = transaction.TransactionDate,
     };
 
     return response;
@@ -235,7 +233,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Description = transaction.Description,
         Amount = transaction.Amount,
         CategoryName = transaction.Category.Name,
-        UpdatedDate = transaction.UpdatedDate,
+        TransactionDate = transaction.TransactionDate,
       })
       .ToListAsync(cancellationToken);
 
