@@ -266,16 +266,16 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       .Where(transaction => transaction.AppUserId == userId)
       .Select(transaction => new
       {
-        transaction.Category.TransacionType,
+        transaction.Category.TransactionType,
         transaction.Amount,
       })
       .ToListAsync(cancellationToken);
 
     var incomeTransactions = transactions
-      .Where(t => t.TransacionType == TransactionType.Income)
+      .Where(t => t.TransactionType == TransactionType.Income)
       .Select(t => t.Amount);
     var expenseTransactions = transactions
-      .Where(t => t.TransacionType == TransactionType.Expense)
+      .Where(t => t.TransactionType == TransactionType.Expense)
       .Select(t => t.Amount);
 
     var totalIncome = incomeTransactions.Sum();

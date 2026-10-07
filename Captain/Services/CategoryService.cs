@@ -30,7 +30,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
 
     if (transactionType is not null)
     {
-      query = query.Where(category => category.TransacionType == transactionType);
+      query = query.Where(category => category.TransactionType == transactionType);
     }
 
     var responses = await query
@@ -38,7 +38,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
       {
         Id = category.Id,
         Name = category.Name,
-        TransactionType = category.TransacionType,
+        TransactionType = category.TransactionType,
       })
       .ToListAsync(cancellationToken);
 
@@ -58,7 +58,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
       {
         Id = category.Id,
         Name = category.Name,
-        TransactionType = category.TransacionType,
+        TransactionType = category.TransactionType,
       })
       .FirstOrDefaultAsync(cancellationToken);
 
@@ -78,7 +78,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
       {
         Id = category.Id,
         Name = category.Name,
-        TransactionType = category.TransacionType,
+        TransactionType = category.TransactionType,
       })
       .FirstOrDefaultAsync(cancellationToken);
 
@@ -105,7 +105,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
     {
       Name = request.Name,
       AppUserId = userId,
-      TransacionType = request.TransactionType,
+      TransactionType = request.TransactionType,
     };
 
     _moneyContext.Categories.Add(category);
@@ -115,7 +115,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
     {
       Id = category.Id,
       Name = category.Name,
-      TransactionType = category.TransacionType,
+      TransactionType = category.TransactionType,
     };
 
     return response;
@@ -134,7 +134,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
       ) ?? throw new NotFoundException("Category not found");
 
     category.Name = request.Name;
-    category.TransacionType = request.TransactionType;
+    category.TransactionType = request.TransactionType;
 
     await _moneyContext.SaveChangesAsync(cancellationToken);
 
@@ -142,7 +142,7 @@ public class CategoryService(MoneyDbContext moneyContext) : ICategoryService
     {
       Id = category.Id,
       Name = category.Name,
-      TransactionType = category.TransacionType,
+      TransactionType = category.TransactionType,
     };
 
     return response;
