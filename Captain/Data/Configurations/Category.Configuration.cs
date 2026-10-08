@@ -10,7 +10,8 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
   {
     builder.ToTable("category", "money");
 
-    builder.HasKey(c => c.Id);
+    builder.HasKey(c => new { c.Id, c.AppUserId });
+    builder.Property(c => c.Id).ValueGeneratedOnAdd();
 
     builder.Property(c => c.Name).HasMaxLength(50);
 

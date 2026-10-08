@@ -25,7 +25,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
     builder
       .HasOne(transaction => transaction.Category)
       .WithMany(category => category.Transactions)
-      .HasForeignKey(transaction => transaction.CategoryId)
+      .HasForeignKey(transaction => new { transaction.CategoryId, transaction.AppUserId })
       .OnDelete(DeleteBehavior.Restrict);
 
     builder
