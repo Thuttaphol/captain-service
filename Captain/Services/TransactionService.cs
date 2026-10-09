@@ -61,6 +61,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Title = transaction.Title,
         Description = transaction.Description,
         Amount = transaction.Amount,
+        CategoryId = transaction.CategoryId,
         CategoryName = transaction.Category.Name,
         TransactionDate = transaction.TransactionDate,
       })
@@ -95,6 +96,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Title = transaction.Title,
         Description = transaction.Description,
         Amount = transaction.Amount,
+        CategoryId = transaction.CategoryId,
         CategoryName = transaction.Category.Name,
         TransactionDate = transaction.TransactionDate,
       })
@@ -140,6 +142,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Title = transaction.Title,
       Description = transaction.Description,
       Amount = transaction.Amount,
+      CategoryId = transaction.CategoryId,
       CategoryName = transaction.Category.Name,
       TransactionDate = transaction.TransactionDate,
     };
@@ -153,12 +156,12 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     CancellationToken cancellationToken
   )
   {
-    bool isCategoryExist = await _moneyContext.Categories.AnyAsync(
-      category => category.Id == request.CategoryId,
+    var category = await _moneyContext.Categories.FirstOrDefaultAsync(
+      category => category.Id == request.CategoryId && category.AppUserId == userId,
       cancellationToken
     );
 
-    if (!isCategoryExist)
+    if (category is null)
     {
       throw new ArgumentException(
         $"Category with ID {request.CategoryId} does not exist."
@@ -167,7 +170,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 
     var transaction =
       await _moneyContext.Transactions.FirstOrDefaultAsync(
-        transaction => transaction.Id == request.Id,
+        transaction => transaction.Id == request.Id && transaction.AppUserId == userId,
         cancellationToken
       ) ?? throw new Exception("Transaction not found");
 
@@ -175,6 +178,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     transaction.Description = request.Description;
     transaction.Amount = request.Amount;
     transaction.CategoryId = request.CategoryId;
+    transaction.Category = category;
     transaction.TransactionDate = request.TransactionDate.UtcDateTime;
 
     await _moneyContext.SaveChangesAsync(cancellationToken);
@@ -185,6 +189,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Title = transaction.Title,
       Description = transaction.Description,
       Amount = transaction.Amount,
+      CategoryId = transaction.CategoryId,
       CategoryName = transaction.Category.Name,
       TransactionDate = transaction.TransactionDate,
     };
@@ -238,6 +243,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Title = transaction.Title,
         Description = transaction.Description,
         Amount = transaction.Amount,
+        CategoryId = transaction.CategoryId,
         CategoryName = transaction.Category.Name,
         TransactionDate = transaction.TransactionDate,
       })
