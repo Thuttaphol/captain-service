@@ -53,7 +53,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     }
 
     var transactions = await query
-      .OrderByDescending(transaction => transaction.Id)
+      .OrderByDescending(transaction => transaction.TransactionDate)
       .Take(transactionSearchQuery.PageSize)
       .Select(transaction => new TransactionResponse
       {
@@ -63,6 +63,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Amount = transaction.Amount,
         CategoryId = transaction.CategoryId,
         CategoryName = transaction.Category.Name,
+        TransactionType = transaction.Category.TransactionType.ToString(),
         TransactionDate = transaction.TransactionDate,
       })
       .ToListAsync(cancellationToken);
@@ -98,6 +99,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Amount = transaction.Amount,
         CategoryId = transaction.CategoryId,
         CategoryName = transaction.Category.Name,
+        TransactionType = transaction.Category.TransactionType.ToString(),
         TransactionDate = transaction.TransactionDate,
       })
       .FirstOrDefaultAsync(cancellationToken);
@@ -144,6 +146,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Amount = transaction.Amount,
       CategoryId = transaction.CategoryId,
       CategoryName = transaction.Category.Name,
+      TransactionType = transaction.Category.TransactionType.ToString(),
       TransactionDate = transaction.TransactionDate,
     };
 
@@ -191,6 +194,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Amount = transaction.Amount,
       CategoryId = transaction.CategoryId,
       CategoryName = transaction.Category.Name,
+      TransactionType = transaction.Category.TransactionType.ToString(),
       TransactionDate = transaction.TransactionDate,
     };
 
@@ -245,6 +249,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         Amount = transaction.Amount,
         CategoryId = transaction.CategoryId,
         CategoryName = transaction.Category.Name,
+        TransactionType = transaction.Category.TransactionType.ToString(),
         TransactionDate = transaction.TransactionDate,
       })
       .ToListAsync(cancellationToken);
@@ -290,5 +295,29 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     var totalBalance = totalIncome - totalExpense;
 
     return new TotalBalanceResponse { TotalBalance = totalBalance };
+  }
+
+  public async Task<List<TransactionResponse>> GetAllTransactionAsync(
+    string userId,
+    CancellationToken cancellationToken
+  )
+  {
+    var transactions = await _moneyContext
+      .Transactions.AsNoTracking()
+      .Where(transaction => transaction.AppUserId == userId)
+      .Select(transaction => new TransactionResponse
+      {
+        Id = transaction.Id,
+        Title = transaction.Title,
+        Description = transaction.Description,
+        Amount = transaction.Amount,
+        CategoryId = transaction.CategoryId,
+        CategoryName = transaction.Category.Name,
+        TransactionType = transaction.Category.TransactionType.ToString(),
+        TransactionDate = transaction.TransactionDate,
+      })
+      .ToListAsync(cancellationToken);
+
+    return transactions;
   }
 }

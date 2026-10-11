@@ -42,4 +42,9 @@ public interface ITransactionService
     string userId,
     CancellationToken cancellationToken
   );
+
+  Task<List<TransactionResponse>> GetAllTransactionAsync(
+    string userId,
+    CancellationToken cancellationToken
+  );
 }

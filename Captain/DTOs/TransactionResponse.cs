@@ -8,5 +8,6 @@ public record TransactionResponse
   public required decimal Amount { get; init; }
   public required int CategoryId { get; init; }
   public required string CategoryName { get; init; }
+  public required string TransactionType { get; init; }
   public required DateTime TransactionDate { get; init; }
 }

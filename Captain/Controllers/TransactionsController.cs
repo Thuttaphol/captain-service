@@ -253,4 +253,32 @@ public class TransactionsController(ITransactionService transactionService)
 
     return Ok(totalBalance);
   }
+
+  [HttpGet("all")]
+  [ProducesResponseType<List<TransactionResponse>>(
+    StatusCodes.Status200OK,
+    "application/json",
+    Description = "All Transaction return successfully"
+  )]
+  [ProducesResponseType<ApiErrorResponse>(
+    StatusCodes.Status404NotFound,
+    "application/json",
+    Description = "Transaction not found"
+  )]
+  public async Task<ActionResult<List<TransactionResponse>>> GetAllTransactionAsync(
+    CancellationToken cancellationToken
+  )
+  {
+    var transactions = await _transactionService.GetAllTransactionAsync(
+      userId: UserId,
+      cancellationToken: cancellationToken
+    );
+
+    if (transactions is null)
+    {
+      throw new NotFoundException("No transaction found");
+    }
+
+    return Ok(transactions);
+  }
 }
