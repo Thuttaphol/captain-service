@@ -1,6 +1,7 @@
 using Captain.Data;
 using Captain.Exceptions;
 using Captain.Extensions;
+using Captain.Identity;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +15,8 @@ builder
   {
     options.SignIn.RequireConfirmedEmail = true;
   })
-  .AddEntityFrameworkStores<MoneyDbContext>();
+  .AddEntityFrameworkStores<MoneyDbContext>()
+  .AddUserManager<AppUserManager>();
 
 builder.Services.AddErrorConfiguration();
 
