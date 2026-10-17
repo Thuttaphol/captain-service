@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Captain.Contracts.Errors;
 using Microsoft.AspNetCore.Mvc;
@@ -94,7 +95,7 @@ class Utils
       return key[2..];
     }
 
-    return key;
+    return JsonNamingPolicy.CamelCase.ConvertName(key);
   }
 
   public static string CreateValidationMessage(string key, string frameworkMessage)

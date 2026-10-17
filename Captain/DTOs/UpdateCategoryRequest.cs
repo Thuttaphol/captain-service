@@ -17,5 +17,5 @@ public record UpdateCategoryRequest
     typeof(TransactionType),
     ErrorMessage = "The TransactionType field must be Expense or Income."
   )]
-  public TransactionType TransactionType { get; set; }
+  public TransactionType? TransactionType { get; set; }
 }
