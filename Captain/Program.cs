@@ -2,6 +2,7 @@ using Captain.Data;
 using Captain.Exceptions;
 using Captain.Extensions;
 using Captain.Identity;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,6 +45,14 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Apply any pending EF Core migrations on startup.
+await using (var scope = app.Services.CreateAsyncScope())
+{
+  var dbContext = scope.ServiceProvider.GetRequiredService<MoneyDbContext>();
+
+  await dbContext.Database.MigrateAsync();
+}
 
 if (!app.Environment.IsDevelopment())
 {
