@@ -1,0 +1,18 @@
+namespace Captain.Models;
+
+public class Transaction
+{
+  public int Id { get; set; }
+  public required string Title { get; set; }
+  public string Description { get; set; } = string.Empty;
+  public decimal Amount { get; set; }
+  public DateTime TransactionDate { get; set; }
+
+  //For CategoryId foreign key and navigation property
+  public int CategoryId { get; set; } //FK
+  public required Category Category { get; set; }
+
+  //For AppUser foreign key and navigation property
+  public string AppUserId { get; set; } = string.Empty;
+  public AppUser AppUser { get; set; } = null!;
+}
