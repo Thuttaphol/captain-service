@@ -29,25 +29,6 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddHealthChecks();
 
-builder.Services.AddCors(options =>
-{
-  options.AddPolicy(
-    name: "NextJs Origin",
-    policy =>
-    {
-      policy
-        .WithOrigins(
-          "http://localhost:3000",
-          "http://192.168.0.2:3000",
-          "https://ttpapp.taile31093.ts.net"
-        )
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials();
-    }
-  );
-});
-
 var app = builder.Build();
 
 // Apply any pending EF Core migrations on startup.
@@ -64,8 +45,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseExceptionHandler();
-
-app.UseCors("NextJs Origin");
 
 app.UseAuthentication();
 app.UseAuthorization();
