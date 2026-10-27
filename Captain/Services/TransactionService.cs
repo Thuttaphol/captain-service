@@ -54,6 +54,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 
     var transactions = await query
       .OrderByDescending(transaction => transaction.TransactionDate)
+      .ThenByDescending(transaction => transaction.Id)
       .Take(transactionSearchQuery.PageSize)
       .Select(transaction => new TransactionResponse
       {
