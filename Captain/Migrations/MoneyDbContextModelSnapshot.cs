@@ -174,6 +174,15 @@ namespace Captain.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("transaction_date");
 
+                    b.Property<string>("WalletAppUserId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("wallet_app_user_id");
+
+                    b.Property<int>("WalletId")
+                        .HasColumnType("integer")
+                        .HasColumnName("wallet_id");
+
                     b.HasKey("Id")
                         .HasName("pk_transaction");
 
@@ -183,7 +192,42 @@ namespace Captain.Migrations
                     b.HasIndex("CategoryId", "AppUserId")
                         .HasDatabaseName("ix_transaction_category_id_app_user_id");
 
+                    b.HasIndex("WalletId", "WalletAppUserId")
+                        .HasDatabaseName("ix_transaction_wallet_id_wallet_app_user_id");
+
                     b.ToTable("transaction", "money");
+                });
+
+            modelBuilder.Entity("Captain.Models.Wallet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("text")
+                        .HasColumnName("app_user_id");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("numeric")
+                        .HasColumnName("balance");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id", "AppUserId")
+                        .HasName("pk_wallet");
+
+                    b.HasIndex("AppUserId")
+                        .HasDatabaseName("ix_wallet_app_user_id");
+
+                    b.ToTable("wallet", "money");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -297,9 +341,30 @@ namespace Captain.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_transaction_category_category_id_app_user_id");
 
+                    b.HasOne("Captain.Models.Wallet", "Wallet")
+                        .WithMany("Transactions")
+                        .HasForeignKey("WalletId", "WalletAppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_transaction_wallet_wallet_id_wallet_app_user_id");
+
                     b.Navigation("AppUser");
 
                     b.Navigation("Category");
+
+                    b.Navigation("Wallet");
+                });
+
+            modelBuilder.Entity("Captain.Models.Wallet", b =>
+                {
+                    b.HasOne("AppUser", "AppUser")
+                        .WithMany("Wallets")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_wallet_asp_net_users_app_user_id");
+
+                    b.Navigation("AppUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -337,9 +402,16 @@ namespace Captain.Migrations
                     b.Navigation("Categories");
 
                     b.Navigation("Transactions");
+
+                    b.Navigation("Wallets");
                 });
 
             modelBuilder.Entity("Captain.Models.Category", b =>
+                {
+                    b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Captain.Models.Wallet", b =>
                 {
                     b.Navigation("Transactions");
                 });

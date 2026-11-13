@@ -45,6 +45,11 @@ public sealed class AppUserManager(
       ];
     }
 
+    if (user.Wallets.Count == 0)
+    {
+      user.Wallets = [new Wallet { Name = "กระเป๋าเงิน", Balance = 0 }];
+    }
+
     return base.CreateAsync(user, password);
   }
 }

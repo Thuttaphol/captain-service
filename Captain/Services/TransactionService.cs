@@ -1,5 +1,6 @@
 using Captain.Data;
 using Captain.DTOs;
+using Captain.Exceptions;
 using Captain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -65,6 +66,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         CategoryId = transaction.CategoryId,
         CategoryName = transaction.Category.Name,
         TransactionType = transaction.Category.TransactionType.ToString(),
+        WalletId = transaction.WalletId,
         TransactionDate = transaction.TransactionDate,
       })
       .ToListAsync(cancellationToken);
@@ -101,6 +103,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         CategoryId = transaction.CategoryId,
         CategoryName = transaction.Category.Name,
         TransactionType = transaction.Category.TransactionType.ToString(),
+        WalletId = transaction.WalletId,
         TransactionDate = transaction.TransactionDate,
       })
       .FirstOrDefaultAsync(cancellationToken);
@@ -114,6 +117,16 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
     CancellationToken cancellationToken
   )
   {
+    var wallet = await _moneyContext.Wallets.FirstOrDefaultAsync(
+      wallet => wallet.Id == request.WalletId && wallet.AppUserId == userId,
+      cancellationToken
+    );
+
+    if (wallet is null)
+    {
+      throw new NotFoundException($"Wallet with ID {request.WalletId} does not exist.");
+    }
+
     var category = await _moneyContext.Categories.FirstOrDefaultAsync(
       category => category.Id == request.CategoryId && category.AppUserId == userId,
       cancellationToken
@@ -121,7 +134,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
 
     if (category is null)
     {
-      throw new ArgumentException(
+      throw new NotFoundException(
         $"Category with ID {request.CategoryId} does not exist."
       );
     }
@@ -132,6 +145,8 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       Description = request.Description,
       Amount = request.Amount,
       Category = category,
+      WalletId = wallet.Id,
+      Wallet = wallet,
       TransactionDate = request.TransactionDate.UtcDateTime,
       AppUserId = userId,
     };
@@ -148,6 +163,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       CategoryId = transaction.CategoryId,
       CategoryName = transaction.Category.Name,
       TransactionType = transaction.Category.TransactionType.ToString(),
+      WalletId = transaction.WalletId,
       TransactionDate = transaction.TransactionDate,
     };
 
@@ -196,6 +212,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
       CategoryId = transaction.CategoryId,
       CategoryName = transaction.Category.Name,
       TransactionType = transaction.Category.TransactionType.ToString(),
+      WalletId = transaction.WalletId,
       TransactionDate = transaction.TransactionDate,
     };
 
@@ -251,6 +268,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         CategoryId = transaction.CategoryId,
         CategoryName = transaction.Category.Name,
         TransactionType = transaction.Category.TransactionType.ToString(),
+        WalletId = transaction.WalletId,
         TransactionDate = transaction.TransactionDate,
       })
       .ToListAsync(cancellationToken);
@@ -315,6 +333,7 @@ public class TransactionService(MoneyDbContext moneyContext) : ITransactionServi
         CategoryId = transaction.CategoryId,
         CategoryName = transaction.Category.Name,
         TransactionType = transaction.Category.TransactionType.ToString(),
+        WalletId = transaction.WalletId,
         TransactionDate = transaction.TransactionDate,
       })
       .ToListAsync(cancellationToken);

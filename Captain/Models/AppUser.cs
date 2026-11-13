@@ -5,4 +5,5 @@ public class AppUser : IdentityUser
 {
   public ICollection<Transaction> Transactions { get; set; } = [];
   public ICollection<Category> Categories { get; set; } = [];
+  public ICollection<Wallet> Wallets { get; set; } = [];
 }

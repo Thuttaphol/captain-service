@@ -1,3 +1,5 @@
+using Captain.Models;
+
 namespace Captain.DTOs;
 
 public record TransactionResponse
@@ -9,5 +11,6 @@ public record TransactionResponse
   public required int CategoryId { get; init; }
   public required string CategoryName { get; init; }
   public required string TransactionType { get; init; }
+  public required int WalletId { get; set; }
   public required DateTime TransactionDate { get; init; }
 }

@@ -23,6 +23,9 @@ public record CreateTransactionRequest
   public required int CategoryId { get; init; }
 
   [Required]
+  public required int WalletId { get; set; }
+
+  [Required]
   [DataType(DataType.DateTime)]
   public required DateTimeOffset TransactionDate { get; init; }
 }

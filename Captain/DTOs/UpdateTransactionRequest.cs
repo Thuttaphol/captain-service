@@ -22,6 +22,9 @@ public record UpdateTransactionRequest
   public decimal Amount { get; init; }
   public int CategoryId { get; init; }
 
+  [Required]
+  public required int WalletId { get; set; }
+
   [DataType(DataType.DateTime)]
   public DateTimeOffset TransactionDate { get; init; }
 }

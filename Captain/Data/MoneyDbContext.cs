@@ -12,6 +12,7 @@ public class MoneyDbContext : IdentityUserContext<AppUser>
 
   public DbSet<Transaction> Transactions => Set<Transaction>();
   public DbSet<Category> Categories => Set<Category>();
+  public DbSet<Wallet> Wallets => Set<Wallet>();
 
   protected override void ConfigureConventions(
     ModelConfigurationBuilder configurationBuilder

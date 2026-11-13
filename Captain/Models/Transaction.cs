@@ -12,6 +12,10 @@ public class Transaction
   public int CategoryId { get; set; } //FK
   public required Category Category { get; set; }
 
+  //For WalletId foreign key and navigation property
+  public required int WalletId { get; set; } //FK
+  public required Wallet Wallet { get; set; }
+
   //For AppUser foreign key and navigation property
   public string AppUserId { get; set; } = string.Empty;
   public AppUser AppUser { get; set; } = null!;
